@@ -146,31 +146,33 @@ AZURE_AI_MODEL_DEPLOYMENT_NAME=gpt-4o-mini
 
 ## Skills
 
-Skills are domain-specific knowledge packages in `.github/skills/`. Each has a `SKILL.md` with:
+Skills are domain-specific knowledge packages. Each has a `SKILL.md` with:
 - **YAML frontmatter** (`name`, `description`) — triggers skill loading
 - **Markdown body** — loaded only when skill activates
 
-### Available Skills
+### Core Skills (Auto-discovered)
 
-| Skill | Purpose |
-|-------|---------|
-| `azure-ai-search-python` | Search SDK patterns, vector/hybrid search, agentic retrieval |
-| `azure-ai-agents-python` | Low-level agents SDK for CRUD, threads, streaming, tools |
-| `azure-ai-voicelive` | Real-time voice AI with Azure AI Voice Live SDK |
-| `foundry-sdk-python` | High-level Foundry project client, versioned agents, evals |
-| `foundry-iq-python` | Agentic retrieval with knowledge bases |
-| `foundry-nextgen-frontend` | NextGen Design System UI patterns (Vite + React) |
-| `agent-framework-azure-hosted-agents` | Agent Framework SDK for persistent Azure agents |
-| `azd-deployment` | Azure Developer CLI deployment to Container Apps with Bicep |
-| `mcp-builder` | Building MCP servers (Python/Node) |
-| `cosmos-db-python-skill` | Cosmos DB NoSQL with Python/FastAPI |
-| `fastapi-router` | FastAPI routers with CRUD, auth, response models |
-| `pydantic-models` | Pydantic v2 multi-model patterns |
-| `zustand-store` | Zustand stores with TypeScript and subscribeWithSelector |
-| `react-flow-node` | React Flow custom nodes with TypeScript |
-| `podcast-generation` | Podcast generation workflows |
-| `skill-creator` | Guide for creating new skills |
-| `github-issue-creator` | Convert raw notes/logs into structured GitHub issues |
+> Location: `.github/skills/` • 16 skills
+
+| Category | Skills |
+|----------|--------|
+| **AI Foundry** | `foundry-sdk-python`, `foundry-iq-python`, `azure-ai-agents-python`, `agent-framework-azure-hosted-agents` |
+| **AI Services** | `azure-ai-search-python`, `azure-ai-voicelive` |
+| **Backend** | `fastapi-router`, `pydantic-models`, `cosmos-db-python-skill` |
+| **Infrastructure** | `azd-deployment`, `azure-resourcemanager-mysql-dotnet`, `azure-resourcemanager-postgresql-dotnet` |
+| **Tooling** | `skill-creator`, `mcp-builder`, `github-issue-creator` |
+| **Other** | `podcast-generation` |
+
+### Extended Catalog
+
+> Location: `skills/{language}/` • 113 skills • See [CATALOG.md](CATALOG.md)
+
+| Language | Skills | Coverage |
+|----------|--------|----------|
+| **Python** | 33 | AI, Data, Messaging, Monitoring, Identity, Security, Integration |
+| **.NET** | 29 | Foundry, AI, Data, Messaging, Identity, Security, Partner |
+| **TypeScript** | 23 | Foundry, AI, Data, Messaging, Frontend, Identity |
+| **Java** | 28 | Foundry, AI, Data, Messaging, Communication, Identity |
 
 ### Skill Selection
 
