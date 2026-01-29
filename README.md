@@ -29,7 +29,7 @@ This repo provides that context:
 npx skills add microsoft/agent-skills
 ```
 
-Select the skills you need from the wizard. Skills are installed to `.github/skills/` and auto-discovered by VS Code Copilot.
+Select the skills you need from the wizard. Skills are installed to your chosen agent's directory (e.g., `.github/skills/` for GitHub Copilot) and symlinked if you use multiple agents.
 
 <details>
 <summary>Manual installation</summary>
