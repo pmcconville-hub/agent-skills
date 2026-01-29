@@ -9,7 +9,7 @@ This script:
 4. Generates llms.txt and llms-full.txt files
 
 Usage:
-    python scripts/scrape_foundry_docs.py
+    python .github/scripts/scrape_foundry_docs.py
 """
 
 import json

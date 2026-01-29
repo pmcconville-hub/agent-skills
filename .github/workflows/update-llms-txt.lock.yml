@@ -441,8 +441,8 @@ jobs:
              - Install required packages: `pip install aiohttp`
           
           2. **Run the scraper**
-             - Execute `python scripts/scrape_foundry_docs.py` to regenerate llms.txt
-             - Execute `python scripts/generate_llms_full.py` to regenerate llms-full.txt
+             - Execute `python .github/scripts/scrape_foundry_docs.py` to regenerate llms.txt
+             - Execute `python .github/scripts/generate_llms_full.py` to regenerate llms-full.txt
           
           3. **Check for changes**
              - Compare the generated files with the existing ones

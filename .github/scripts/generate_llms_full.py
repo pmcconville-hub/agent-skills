@@ -6,7 +6,7 @@ This script fetches the actual content of each documentation page and creates
 an expanded llms.txt file suitable for LLM context loading.
 
 Usage:
-    python scripts/generate_llms_full.py
+    python .github/scripts/generate_llms_full.py
 """
 
 import json
