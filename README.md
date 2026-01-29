@@ -14,7 +14,7 @@ This repo provides that context:
 
 - **[127 skills](#skill-catalog)** for Azure SDK and Microsoft Foundry development
 - **[Live Foundry docs](https://context7.com/microsoft/agent-skills)** — Context7-indexed documentation, updated via GitHub Actions workflow
-- **[MCP servers](https://github.com/microsoft/mcp)** — Full Model Context Protocol implementations for Azure services
+- **[MCP server configs](.vscode/mcp.json)** — Pre-configured servers for docs, GitHub, browser automation ([full implementations](https://github.com/microsoft/mcp))
 - **Agent personas** — Role-specific agents (backend, frontend, infrastructure, planner) with domain expertise
 - **[AGENTS.md](AGENTS.md)** — Template for configuring agent behavior in your projects
 
