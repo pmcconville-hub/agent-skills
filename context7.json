@@ -1,10 +1,14 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
-  "url": "https://context7.com/microsoft/agent-skills",
-  "public_key": "pk_kKufZ9rfwM4DGVLQ4ipVJ",
-  "projectTitle": "Microsoft Foundry Documentation",
-  "description": "Live documentation for Azure AI Foundry SDKs and agents, updated daily from Microsoft Learn",
-  "folders": ["output"],
-  "excludeFiles": ["AGENTS.md", "README.md", "SECURITY.md"],
-  "excludeFolders": [".github", "skills"]
+  "projectTitle": "Agent Skills",
+  "description": "Skills, prompts, and MCP configurations for AI coding agents working with Azure SDKs and Microsoft AI Foundry. Includes 127 skills for Python, .NET, TypeScript, and Java with patterns for authentication, data storage, messaging, and AI services.",
+  "folders": [".github/skills", ".github/prompts", ".github/agents", ".github/docs", "output"],
+  "excludeFolders": ["skills", ".claude", ".opencode", "node_modules"],
+  "excludeFiles": ["SECURITY.md", "blog.wordpress.xml"],
+  "rules": [
+    "Load skills selectively - only those relevant to current task to avoid context rot",
+    "Always use DefaultAzureCredential for Azure SDK authentication",
+    "Search microsoft-docs MCP before implementing Azure SDK code",
+    "Skills use progressive disclosure: metadata at startup, full instructions on activation"
+  ]
 }
