@@ -1,6 +1,7 @@
 ---
 name: azure-ai-agents-py
 description: Build AI agents using the Azure AI Agents Python SDK (azure-ai-agents). Use when creating agents hosted on Azure AI Foundry with tools (File Search, Code Interpreter, Bing Grounding, Azure AI Search, Function Calling, OpenAPI, MCP), managing threads and messages, implementing streaming responses, or working with vector stores. This is the low-level SDK - for higher-level abstractions, use the agent-framework skill instead.
+package: azure-ai-agents
 ---
 
 # Azure AI Agents Python SDK

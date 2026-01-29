@@ -71,7 +71,6 @@ Apply these principles to every task.
 
 ```
 AGENTS.md                # Agent configuration template
-CATALOG.md               # Full skill catalog
 
 .github/
 ├── skills/              # All 127 skills (flat structure with language suffixes)
@@ -109,25 +108,25 @@ Skills use language suffixes for discoverability:
 | Language | Suffix | Examples |
 |----------|--------|----------|
 | **Core** | — | `mcp-builder`, `skill-creator`, `azd-deployment` |
-| **Python** | `-py` | `inference-py`, `cosmos-db-py`, `foundry-sdk-py` |
-| **.NET** | `-dotnet` | `inference-dotnet`, `cosmosdb-dotnet` |
-| **TypeScript** | `-ts` | `inference-ts`, `agents-ts`, `nextgen-frontend-ts` |
-| **Java** | `-java` | `inference-java`, `cosmos-java` |
+| **Python** | `-py` | `azure-ai-inference-py`, `azure-cosmos-db-py`, `azure-ai-projects-py` |
+| **.NET** | `-dotnet` | `azure-ai-inference-dotnet`, `azure-resource-manager-cosmosdb-dotnet` |
+| **TypeScript** | `-ts` | `azure-ai-inference-ts`, `azure-ai-agents-ts`, `foundry-nextgen-frontend-ts` |
+| **Java** | `-java` | `azure-ai-inference-java`, `azure-cosmos-java` |
 
 ### Featured Skills
 
 | Skill | Purpose |
 |-------|---------|
-| `azure-ai-search-py` | Search SDK patterns, vector/hybrid search, agentic retrieval |
+| `azure-search-documents-py` | Search SDK patterns, vector/hybrid search, agentic retrieval |
 | `azure-ai-agents-py` | Low-level agents SDK for CRUD, threads, streaming, tools |
 | `azure-ai-voicelive-py` | Real-time voice AI with Azure AI Voice Live SDK |
-| `foundry-sdk-py` | High-level Foundry project client, versioned agents, evals |
+| `azure-ai-projects-py` | High-level Foundry project client, versioned agents, evals |
 | `foundry-iq-py` | Agentic retrieval with knowledge bases |
-| `nextgen-frontend-ts` | NextGen Design System UI patterns (Vite + React) |
-| `agent-framework-py` | Agent Framework SDK for persistent Azure agents |
+| `foundry-nextgen-frontend-ts` | NextGen Design System UI patterns (Vite + React) |
+| `agent-framework-azure-ai-py` | Agent Framework SDK for persistent Azure agents |
 | `azd-deployment` | Azure Developer CLI deployment to Container Apps with Bicep |
 | `mcp-builder` | Building MCP servers (Python/Node/C#) |
-| `cosmos-db-py` | Cosmos DB NoSQL with Python/FastAPI |
+| `azure-cosmos-db-py` | Cosmos DB NoSQL with Python/FastAPI |
 | `fastapi-router-py` | FastAPI routers with CRUD, auth, response models |
 | `pydantic-models-py` | Pydantic v2 multi-model patterns |
 | `zustand-store-ts` | Zustand stores with TypeScript and subscribeWithSelector |
@@ -136,7 +135,7 @@ Skills use language suffixes for discoverability:
 | `skill-creator` | Guide for creating new skills |
 | `github-issue-creator` | GitHub issue creation patterns |
 
-📖 **See [CATALOG.md](../CATALOG.md) for all 127 skills**
+📖 **See [README.md#skill-catalog](../README.md#skill-catalog) for all 127 skills**
 
 ### Skill Selection
 
@@ -252,7 +251,7 @@ assert result == expected
 1. Create a new directory under `.github/skills/<skill-name>/`
    - Use language suffix: `-py`, `-dotnet`, `-ts`, `-java`
    - Core/cross-language skills have no suffix
-   - Example: `cosmos-db-py`, `inference-dotnet`, `mcp-builder`
+   - Example: `azure-cosmos-db-py`, `azure-ai-inference-dotnet`, `mcp-builder`
 2. Add a `SKILL.md` file with YAML frontmatter:
    ```yaml
    ---

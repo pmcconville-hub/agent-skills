@@ -1,4 +1,10 @@
 {
+  "$schema": "https://context7.com/schema/context7.json",
   "url": "https://context7.com/microsoft/agent-skills",
-  "public_key": "pk_kKufZ9rfwM4DGVLQ4ipVJ"
+  "public_key": "pk_kKufZ9rfwM4DGVLQ4ipVJ",
+  "projectTitle": "Microsoft Foundry Documentation",
+  "description": "Live documentation for Azure AI Foundry SDKs and agents, updated daily from Microsoft Learn",
+  "folders": ["output"],
+  "excludeFiles": ["AGENTS.md", "README.md", "SECURITY.md"],
+  "excludeFolders": [".github", "skills"]
 }
