@@ -16,10 +16,11 @@ Important information:
 
 ## Getting Started
 
-- [Quickstart](https://learn.microsoft.com/en-us/azure/ai-foundry/quickstarts/get-started-code?view=foundry)
+- [Quickstart: Chat with an agent](https://learn.microsoft.com/en-us/azure/ai-foundry/quickstarts/get-started-code?view=foundry)
 
 ## Tutorials
 
+- [Quickstart: Create resources](https://learn.microsoft.com/en-us/azure/ai-foundry/tutorials/quickstart-create-foundry-resources?view=foundry)
 - [Tutorial: Idea to prototype](https://learn.microsoft.com/en-us/azure/ai-foundry/tutorials/developer-journey-idea-to-prototype?view=foundry)
 - [Use Microsoft Foundry with a screen reader](https://learn.microsoft.com/en-us/azure/ai-foundry/tutorials/screen-reader?view=foundry)
 
@@ -81,7 +82,8 @@ Important information:
 - [Vector stores for file search](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/vector-stores?view=foundry)
 - [Foundry IQ (preview)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/knowledge-retrieval?view=foundry)
 - [SharePoint (preview)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/sharepoint?view=foundry)
-- [Web search (preview)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/web-search?view=foundry)
+- [Web search overview](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/web-overview?view=foundry)
+- [Web search tool (preview)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/web-search?view=foundry)
 - [Grounding with Bing tools](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/bing-tools?view=foundry)
 - [Fabric data agent (preview)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/fabric?view=foundry)
 - [Azure Speech in Foundry Tools](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/azure-ai-speech?view=foundry)
@@ -119,6 +121,7 @@ Important information:
 - [Endpoints for Foundry Models](https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/concepts/endpoints?view=foundry)
 - [Get started with DeepSeek-R1 reasoning model](https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/tutorials/get-started-deepseek-r1?view=foundry)
 - [Foundry Models quotas and limits](https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/quotas-limits?view=foundry)
+- [Configure keyless authentication](https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/how-to/configure-entra-id?view=foundry)
 
 ## Azure OpenAI
 
@@ -205,13 +208,14 @@ Important information:
 ## How-To Guides
 
 - [Compare models](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/benchmark-model-in-catalog?view=foundry)
-- [Run evaluations in the cloud (Microsoft Foundry SDK)](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/cloud-evaluation?view=foundry)
-- [Run agent evaluations locally (Azure AI Evaluation SDK)](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/agent-evaluate-sdk?view=foundry)
+- [Run evaluations in the cloud](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/cloud-evaluation?view=foundry)
+- [Evaluate your AI agents](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/agent-evaluate-sdk?view=foundry)
 - [Run evaluations from the portal](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluate-generative-ai-app?view=foundry)
 - [View evaluation results in the portal](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluate-results?view=foundry)
-- [Run red teaming scans locally (Azure AI Evaluation SDK)](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-scans-ai-red-teaming-agent?view=foundry)
-- [Run red teaming scans in the cloud (Microsoft Foundry SDK)](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-ai-red-teaming-cloud?view=foundry)
+- [Run red teaming scans locally](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-scans-ai-red-teaming-agent?view=foundry)
+- [Run red teaming scans in the cloud](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-ai-red-teaming-cloud?view=foundry)
 - [Evaluation in GitHub Actions](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluation-github-action?view=foundry)
+- [Evaluation in Azure DevOps](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluation-azure-devops?view=foundry)
 - [Set up your developer environment](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/install-cli-sdk?view=foundry)
 - [Work in VS Code](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/get-started-projects-vs-code?view=foundry)
 - [Start with an AI template](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/ai-template-get-started?view=foundry)

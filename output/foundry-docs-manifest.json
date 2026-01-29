@@ -10,14 +10,12 @@
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/what-is-foundry?view=foundry"
       }
     ],
-    "Getting Started": [
-      {
-        "title": "Quickstart",
-        "href": "quickstarts/get-started-code",
-        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/quickstarts/get-started-code?view=foundry"
-      }
-    ],
     "Tutorials": [
+      {
+        "title": "Quickstart: Create resources",
+        "href": "tutorials/quickstart-create-foundry-resources",
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/tutorials/quickstart-create-foundry-resources?view=foundry"
+      },
       {
         "title": "Tutorial: Idea to prototype",
         "href": "tutorials/developer-journey-idea-to-prototype",
@@ -27,6 +25,13 @@
         "title": "Use Microsoft Foundry with a screen reader",
         "href": "tutorials/screen-reader",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/tutorials/screen-reader?view=foundry"
+      }
+    ],
+    "Getting Started": [
+      {
+        "title": "Quickstart: Chat with an agent",
+        "href": "quickstarts/get-started-code",
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/quickstarts/get-started-code?view=foundry"
       }
     ],
     "Concepts": [
@@ -298,7 +303,12 @@
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/sharepoint?view=foundry"
       },
       {
-        "title": "Web search (preview)",
+        "title": "Web search overview",
+        "href": "agents/how-to/tools/web-overview",
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/web-overview?view=foundry"
+      },
+      {
+        "title": "Web search tool (preview)",
         "href": "agents/how-to/tools/web-search",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/tools/web-search?view=foundry"
       },
@@ -954,6 +964,11 @@
         "title": "Foundry Models quotas and limits",
         "href": "foundry-models/quotas-limits",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/quotas-limits?view=foundry"
+      },
+      {
+        "title": "Configure keyless authentication",
+        "href": "foundry-models/how-to/configure-entra-id",
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/how-to/configure-entra-id?view=foundry"
       }
     ],
     "How-To Guides": [
@@ -963,12 +978,12 @@
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/benchmark-model-in-catalog?view=foundry"
       },
       {
-        "title": "Run evaluations in the cloud (Microsoft Foundry SDK)",
+        "title": "Run evaluations in the cloud",
         "href": "how-to/develop/cloud-evaluation",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/cloud-evaluation?view=foundry"
       },
       {
-        "title": "Run agent evaluations locally (Azure AI Evaluation SDK)",
+        "title": "Evaluate your AI agents",
         "href": "how-to/develop/agent-evaluate-sdk",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/agent-evaluate-sdk?view=foundry"
       },
@@ -983,12 +998,12 @@
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluate-results?view=foundry"
       },
       {
-        "title": "Run red teaming scans locally (Azure AI Evaluation SDK)",
+        "title": "Run red teaming scans locally",
         "href": "how-to/develop/run-scans-ai-red-teaming-agent",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-scans-ai-red-teaming-agent?view=foundry"
       },
       {
-        "title": "Run red teaming scans in the cloud (Microsoft Foundry SDK)",
+        "title": "Run red teaming scans in the cloud",
         "href": "how-to/develop/run-ai-red-teaming-cloud",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/develop/run-ai-red-teaming-cloud?view=foundry"
       },
@@ -996,6 +1011,11 @@
         "title": "Evaluation in GitHub Actions",
         "href": "how-to/evaluation-github-action",
         "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluation-github-action?view=foundry"
+      },
+      {
+        "title": "Evaluation in Azure DevOps",
+        "href": "how-to/evaluation-azure-devops",
+        "url": "https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/evaluation-azure-devops?view=foundry"
       },
       {
         "title": "Set up your developer environment",
@@ -1328,6 +1348,6 @@
       }
     ]
   },
-  "total_pages": 258,
-  "generated_at": "2026-01-19T17:23:52Z"
+  "total_pages": 262,
+  "generated_at": "2026-01-29T05:13:57Z"
 }
