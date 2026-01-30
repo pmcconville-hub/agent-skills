@@ -8,15 +8,19 @@ Skills, prompts, and MCP configurations for AI coding agents working with Azure 
 
 ---
 
+## What's Inside
+
+| Resource | Description |
+|----------|-------------|
+| **[127 Skills](#skill-catalog)** | Domain-specific knowledge for Azure SDK and Foundry development |
+| **[Custom Agents](#agents)** | Role-specific agents (backend, frontend, infrastructure, planner) |
+| **[AGENTS.md](AGENTS.md)** | Template for configuring agent behavior in your projects |
+| **[MCP Configs](#mcp-servers)** | Pre-configured servers for docs, GitHub, browser automation |
+| **[Live Docs](https://context7.com/microsoft/agent-skills)** | Context7-indexed Foundry documentation, updated daily |
+
+---
+
 Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are powerful, but they lack domain knowledge about your SDKs. The patterns are already in their weights from pretraining. All you need is the right activation context to surface them.
-
-This repo provides that context:
-
-- **[127 skills](#skill-catalog)** for Azure SDK and Microsoft Foundry development
-- **[Live Foundry docs](https://context7.com/microsoft/agent-skills)** — Context7-indexed documentation, updated via GitHub Actions workflow
-- **[MCP server configs](.vscode/mcp.json)** — Pre-configured servers for docs, GitHub, browser automation ([full implementations](https://github.com/microsoft/mcp))
-- **[Custom Agents](#agents)** — Role-specific agents (backend, frontend, infrastructure, planner) with domain expertise
-- **[AGENTS.md](AGENTS.md)** — Template for configuring agent behavior in your projects
 
 > [!IMPORTANT]
 > **Use skills selectively.** Loading all skills causes context rot: diluted attention, wasted tokens, conflated patterns. Only copy skills essential for your current project.
@@ -497,6 +501,35 @@ Reusable prompt templates in [`.github/prompts/`](.github/prompts/) for code rev
 3. Creates a PR if documentation has changed
 
 These files follow the [llms.txt specification](https://llmstxt.org/) for LLM-friendly documentation.
+
+---
+
+## Testing Skills
+
+The test harness validates that skills produce correct code patterns. It evaluates generated code against acceptance criteria defined for each skill.
+
+```bash
+# Install test dependencies
+pip install -r tests/requirements.txt
+
+# List skills with test coverage
+python3 -m tests.harness.runner --list
+
+# Run tests for a specific skill (mock mode for CI)
+python3 -m tests.harness.runner azure-ai-projects-py --mock --verbose
+
+# Run all pytest tests
+python3 -m pytest tests/test_skills.py -v
+```
+
+### Adding Test Coverage
+
+See [`tests/AGENTS.md`](tests/AGENTS.md) for instructions on adding acceptance criteria and scenarios for new skills.
+
+| Skill | Scenarios |
+|-------|-----------|
+| `azure-ai-agents-py` | 7 |
+| `azure-ai-projects-py` | 12 |
 
 ---
 
