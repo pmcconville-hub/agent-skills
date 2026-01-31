@@ -24,6 +24,31 @@ import { DEFAULT_GENERATION_CONFIG, Severity, createFinding } from "./types.js";
 import { SkillCopilotClient, checkCopilotAvailable } from "./copilot-client.js";
 import { AcceptanceCriteriaLoader } from "./criteria-loader.js";
 import { CodeEvaluator } from "./evaluator.js";
+import {
+  RalphLoopController,
+  createRalphConfig,
+  DEFAULT_RALPH_CONFIG,
+  type RalphLoopConfig,
+  type RalphLoopResult,
+} from "./ralph-loop.js";
+
+// =============================================================================
+// Ralph Loop Summary
+// =============================================================================
+
+/**
+ * Summary of Ralph Loop results across multiple scenarios.
+ */
+export interface RalphLoopSummary {
+  skillName: string;
+  scenariosRun: number;
+  scenariosConverged: number;
+  avgIterationsToConverge: number;
+  avgFinalScore: number;
+  avgImprovement: number;
+  totalDurationMs: number;
+  scenarioResults: Map<string, RalphLoopResult>;
+}
 
 // =============================================================================
 // Runner Class
@@ -346,6 +371,90 @@ export class SkillEvaluationRunner {
     score += result.matchedCorrect.length * 5;
     return Math.max(0, Math.min(100, score));
   }
+
+  async runWithLoop(
+    skillName: string,
+    scenarioFilter?: string,
+    config?: Partial<RalphLoopConfig>
+  ): Promise<RalphLoopSummary> {
+    const startTime = Date.now();
+
+    const criteria = this.criteriaLoader.load(skillName);
+    const suite = this.loadScenarios(skillName);
+
+    let scenarios = suite.scenarios;
+    if (scenarioFilter) {
+      const filterLower = scenarioFilter.toLowerCase();
+      scenarios = scenarios.filter(
+        (s) =>
+          s.name.toLowerCase().includes(filterLower) ||
+          s.tags.some((t) => t.toLowerCase().includes(filterLower))
+      );
+    }
+
+    const ralphConfig = createRalphConfig(config);
+    const evaluator = new CodeEvaluator(criteria);
+    const controller = new RalphLoopController(
+      criteria,
+      evaluator,
+      this.copilotClient,
+      ralphConfig
+    );
+
+    const scenarioResults = new Map<string, RalphLoopResult>();
+    let totalIterations = 0;
+    let convergedCount = 0;
+
+    for (const scenario of scenarios) {
+      if (this.verbose) {
+        console.log(`  Running scenario: ${scenario.name}`);
+      }
+
+      if (scenario.mockResponse && this.useMock) {
+        this.copilotClient.addMockResponse(scenario.name, scenario.mockResponse);
+      }
+
+      const result = await controller.run(scenario.prompt, scenario.name);
+      scenarioResults.set(scenario.name, result);
+
+      if (result.converged) {
+        convergedCount++;
+      }
+      totalIterations += result.iterations.length;
+
+      if (this.verbose) {
+        const status = result.converged ? chalk.green("✓") : chalk.yellow("○");
+        console.log(
+          `    ${status} Score: ${result.finalScore.toFixed(1)} (${result.iterations.length} iterations, ${result.stopReason})`
+        );
+      }
+    }
+
+    const durationMs = Date.now() - startTime;
+
+    const results = Array.from(scenarioResults.values());
+    const avgFinalScore =
+      results.length > 0
+        ? results.reduce((sum, r) => sum + r.finalScore, 0) / results.length
+        : 0;
+    const avgImprovement =
+      results.length > 0
+        ? results.reduce((sum, r) => sum + r.improvement, 0) / results.length
+        : 0;
+    const avgIterations =
+      convergedCount > 0 ? totalIterations / convergedCount : totalIterations;
+
+    return {
+      skillName,
+      scenariosRun: scenarios.length,
+      scenariosConverged: convergedCount,
+      avgIterationsToConverge: avgIterations,
+      avgFinalScore,
+      avgImprovement,
+      totalDurationMs: durationMs,
+      scenarioResults,
+    };
+  }
 }
 
 // =============================================================================
@@ -385,6 +494,38 @@ function summaryToDict(summary: EvaluationSummary): Record<string, unknown> {
   };
 }
 
+function convertRalphToSummary(ralph: RalphLoopSummary): EvaluationSummary {
+  const results: EvaluationResult[] = [];
+  
+  for (const [scenarioName, loopResult] of ralph.scenarioResults) {
+    const lastIteration = loopResult.iterations[loopResult.iterations.length - 1];
+    if (lastIteration) {
+      results.push({
+        skillName: ralph.skillName,
+        scenario: scenarioName,
+        generatedCode: lastIteration.generatedCode,
+        findings: lastIteration.findings,
+        matchedCorrect: [],
+        matchedIncorrect: [],
+        score: lastIteration.score,
+        passed: loopResult.converged,
+        errorCount: lastIteration.findings.filter(f => f.severity === Severity.ERROR).length,
+        warningCount: lastIteration.findings.filter(f => f.severity === Severity.WARNING).length,
+      });
+    }
+  }
+
+  return {
+    skillName: ralph.skillName,
+    totalScenarios: ralph.scenariosRun,
+    passed: ralph.scenariosConverged,
+    failed: ralph.scenariosRun - ralph.scenariosConverged,
+    avgScore: ralph.avgFinalScore,
+    durationMs: ralph.totalDurationMs,
+    results,
+  };
+}
+
 // =============================================================================
 // CLI
 // =============================================================================
@@ -396,6 +537,9 @@ interface CLIOptions {
   verbose?: boolean;
   output?: string;
   outputFile?: string;
+  ralph?: boolean;
+  maxIterations?: number;
+  threshold?: number;
 }
 
 async function main(): Promise<number> {
@@ -410,7 +554,10 @@ async function main(): Promise<number> {
     .option("--mock", "Use mock responses instead of Copilot SDK")
     .option("-v, --verbose", "Verbose output")
     .option("--output <format>", "Output format (text/json)", "text")
-    .option("--output-file <file>", "Write results to file");
+    .option("--output-file <file>", "Write results to file")
+    .option("--ralph", "Enable Ralph Loop iterative improvement mode")
+    .option("--max-iterations <n>", "Max iterations for Ralph Loop (default: 5)", parseInt)
+    .option("--threshold <n>", "Quality threshold for Ralph Loop (default: 80)", parseInt);
 
   program.parse();
 
@@ -459,11 +606,26 @@ async function main(): Promise<number> {
   // Run evaluation
   console.log(`Evaluating skill: ${chalk.cyan(skillArg)}`);
   console.log(`Mode: ${useMock ? chalk.yellow("mock") : chalk.green("copilot")}`);
+  if (options.ralph) {
+    const maxIter = options.maxIterations ?? DEFAULT_RALPH_CONFIG.maxIterations;
+    const threshold = options.threshold ?? DEFAULT_RALPH_CONFIG.qualityThreshold;
+    console.log(`Ralph Loop: ${chalk.cyan("enabled")} (max ${maxIter} iterations, threshold ${threshold})`);
+  }
   console.log("-".repeat(50));
 
   let summary: EvaluationSummary;
+  let ralphSummary: RalphLoopSummary | undefined;
+
   try {
-    summary = await runner.run(skillArg, options.filter);
+    if (options.ralph) {
+      ralphSummary = await runner.runWithLoop(skillArg, options.filter, {
+        maxIterations: options.maxIterations ?? DEFAULT_RALPH_CONFIG.maxIterations,
+        qualityThreshold: options.threshold ?? DEFAULT_RALPH_CONFIG.qualityThreshold,
+      });
+      summary = convertRalphToSummary(ralphSummary);
+    } else {
+      summary = await runner.run(skillArg, options.filter);
+    }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.log(chalk.red(`Error: ${message}`));
@@ -492,6 +654,14 @@ async function main(): Promise<number> {
       `Average Score: ${summary.avgScore.toFixed(1)}`,
       `Duration: ${summary.durationMs.toFixed(0)}ms`,
     ];
+
+    if (ralphSummary) {
+      lines.push("");
+      lines.push(chalk.cyan("Ralph Loop Stats:"));
+      lines.push(`  Converged: ${ralphSummary.scenariosConverged}/${ralphSummary.scenariosRun}`);
+      lines.push(`  Avg Iterations: ${ralphSummary.avgIterationsToConverge.toFixed(1)}`);
+      lines.push(`  Avg Improvement: ${ralphSummary.avgImprovement >= 0 ? "+" : ""}${ralphSummary.avgImprovement.toFixed(1)} pts`);
+    }
 
     if (summary.failed > 0) {
       lines.push("");

@@ -38,6 +38,7 @@ export class MockCopilotClient implements CopilotClient {
   async generate(
     prompt: string,
     skillName: string,
+    config?: GenerationConfig,
     scenarioName?: string
   ): Promise<GenerationResult> {
     // If scenarioName is provided, use it to look up the response
@@ -154,7 +155,7 @@ export class SkillCopilotClient implements CopilotClient {
     }
 
     if (this.useMock) {
-      return this.mockClient.generate(prompt, skillName, scenarioName);
+      return this.mockClient.generate(prompt, skillName, config, scenarioName);
     }
 
     // Use real SDK

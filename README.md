@@ -35,6 +35,24 @@ npx skills add microsoft/agent-skills
 
 Select the skills you need from the wizard. Skills are installed to your chosen agent's directory (e.g., `.github/skills/` for GitHub Copilot) and symlinked if you use multiple agents.
 
+### Install via Context7
+
+[Context7](https://context7.com/microsoft/agent-skills?tab=skills) provides an alternative way to browse, search, and install skills:
+
+```bash
+# Search for skills
+npx ctx7 skills search "Microsoft Agent Skills"
+
+# Install all skills (not recommended - use selectively)
+npx ctx7 skills install /microsoft/agent-skills
+
+# Install specific skills (recommended)
+npx ctx7 skills install /microsoft/agent-skills azure-ai-projects-py
+npx ctx7 skills install /microsoft/agent-skills azure-cosmos-db-py frontend-ui-dark-ts
+```
+
+> **Explore skills:** Browse the full catalog at [context7.com/microsoft/agent-skills](https://context7.com/microsoft/agent-skills?tab=skills) to search, preview, and install skills interactively.
+
 <details>
 <summary>Manual installation</summary>
 
@@ -552,16 +570,19 @@ The test harness validates that skills produce correct code patterns. It evaluat
 ```bash
 # Install test dependencies (from tests directory)
 cd tests
-uv sync
+pnpm install
 
 # List skills with test coverage
-uv run python -m harness.runner --list
+pnpm harness --list
 
 # Run tests for a specific skill (mock mode for CI)
-uv run python -m harness.runner azure-ai-projects-py --mock --verbose
+pnpm harness azure-ai-projects-py --mock --verbose
 
-# Run all pytest tests
-uv run pytest test_skills.py -v
+# Run with Ralph Loop (iterative improvement)
+pnpm harness azure-ai-projects-py --ralph --mock --max-iterations 5 --threshold 85
+
+# Run unit tests
+pnpm test
 ```
 
 ### Test Coverage Summary

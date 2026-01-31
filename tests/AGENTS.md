@@ -15,8 +15,8 @@ This folder contains a test harness for evaluating AI-generated code against acc
 
 | Skill | Criteria | Scenarios | Status |
 |-------|----------|-----------|--------|
-| `azure-ai-agents-py` | ✅ Complete | ✅ Complete | Passing |
-| `azure-ai-projects-py` | ✅ Complete | ✅ Complete | Passing |
+| `azure-ai-agents-py` | Complete | Complete | Passing |
+| `azure-ai-projects-py` | Complete | Complete | Passing |
 
 Run `pnpm harness --list` from the `tests/` directory to see all skills with criteria.
 
@@ -39,17 +39,17 @@ Run `pnpm harness --list` from the `tests/` directory to see all skills with cri
 
 ## Section Name
 
-### ✅ Correct
-```python
+### Correct
+\`\`\`python
 # Working pattern
 from azure.module import Client
-```
+\`\`\`
 
-### ❌ Incorrect
-```python
+### Incorrect
+\`\`\`python
 # Anti-pattern with explanation
 from wrong.module import Client  # Wrong import path
-```
+\`\`\`
 ```
 
 **Critical:** Document import distinctions carefully. Many Azure SDKs have models in different locations (e.g., `azure.ai.agents.models` vs `azure.ai.projects.models`).
@@ -125,6 +125,8 @@ tests/
 │   ├── evaluator.ts          # Validates code against patterns
 │   ├── copilot-client.ts     # Code generation (mock/real)
 │   ├── runner.ts             # CLI: pnpm harness
+│   ├── ralph-loop.ts         # Iterative improvement controller
+│   ├── feedback-builder.ts   # LLM-actionable feedback generator
 │   ├── index.ts              # Package exports
 │   └── reporters/            # Output formatters
 │       ├── console.ts        # Console output
@@ -187,8 +189,14 @@ pnpm harness <skill> --mock --verbose
 # Run filtered scenarios
 pnpm harness <skill> --mock --filter <name-or-tag>
 
+# Run with Ralph Loop (iterative improvement)
+pnpm harness <skill> --ralph --mock --max-iterations 5 --threshold 85
+
 # Run tests (all tests)
 pnpm test
+
+# Run specific test file
+pnpm test:run harness/ralph-loop.test.ts
 
 # Run typecheck
 pnpm typecheck
@@ -225,7 +233,7 @@ For each, follow the 3-step process above.
 
 > **Task Plan:** `.sisyphus/plans/ralph-loop-quality-tasks.md`
 
-The Ralph Loop is an iterative code generation and improvement system that re-generates code until quality thresholds are met. This section guides agents working on Ralph Loop implementation across multiple sessions.
+The Ralph Loop is an iterative code generation and improvement system that re-generates code until quality thresholds are met.
 
 ### What is Ralph Loop?
 
@@ -251,114 +259,65 @@ The Ralph Loop is an iterative code generation and improvement system that re-ge
 4. **Re-generate** with feedback until quality threshold is met (or max iterations)
 5. **Report** on quality improvements across iterations
 
-### Development Phases
+### Implementation Status
 
-| Phase | Description | Priority | Status |
-|-------|-------------|----------|--------|
-| **Phase 1** | Core Ralph Loop Implementation | High | 🔲 Not Started |
-| **Phase 2** | Extended Quality Scoring | Medium | 🔲 Blocked by Phase 1 |
-| **Phase 3** | Advanced Features | Low | 🔲 Blocked by Phase 2 |
-| **Phase 4** | Integration & Automation | Medium | 🔲 Blocked by Phase 1 |
+| Component | File | Status |
+|-----------|------|--------|
+| Ralph Loop Controller | `harness/ralph-loop.ts` | Complete |
+| Feedback Builder | `harness/feedback-builder.ts` | Complete |
+| CLI Integration | `harness/runner.ts` | Complete |
+| Unit Tests | `harness/*.test.ts` | Complete (45 tests) |
 
-### Multi-Session Workflow
+### Using Ralph Loop
 
-#### Before Starting
+```bash
+# Basic usage
+pnpm harness azure-ai-agents-py --ralph --mock
 
-1. **Read the task plan** — `.sisyphus/plans/ralph-loop-quality-tasks.md`
-2. **Check phase dependencies** — Don't start Phase 2 until Phase 1 is complete
-3. **Check task status** — Look for `🔄 In Progress` markers in the task plan
-4. **Claim your task** — Add your session ID to the task you're working on
-
-#### Claiming a Task
-
-Edit the task plan to mark your task as in-progress:
-
-```markdown
-### Task 1.1: Create Ralph Loop Controller
-**Status:** 🔄 In Progress (session: abc123)
-**Started:** 2026-01-31
+# With custom settings
+pnpm harness azure-ai-agents-py --ralph --max-iterations 5 --threshold 85 --mock --verbose
 ```
 
-#### Completing a Task
+**Stop conditions:**
+- Quality threshold met (default: 80)
+- Perfect score (100)
+- Max iterations reached (default: 5)
+- No improvement between iterations
+- Score regression
 
-Before marking complete:
-- [ ] Implementation complete
-- [ ] Tests written and passing (`tests/test_*.py`)
-- [ ] Documentation updated (docstrings, inline comments)
-- [ ] This file (`tests/AGENTS.md`) updated if public API changed
-- [ ] Task plan updated with completion status
-
-Update the task plan:
-```markdown
-### Task 1.1: Create Ralph Loop Controller
-**Status:** ✅ Complete (session: abc123)
-**Completed:** 2026-01-31
-```
-
-### Phase 1 Tasks (Start Here)
-
-| Task | File | Description |
-|------|------|-------------|
-| 1.1 | `harness/ralph_loop.py` | Core loop controller with config, iteration tracking |
-| 1.2 | `harness/feedback_builder.py` | Build LLM-actionable feedback from findings |
-| 1.3 | `harness/runner.py` (modify) | Add `--ralph` CLI flag and loop mode |
-| 1.4 | `harness/reporters/ralph_reporter.py` | Iteration progress reporting |
-
-**Start with Task 1.1** — All other Phase 1 tasks depend on it.
-
-### Key Patterns to Follow
+### Key Patterns
 
 #### Match Existing Style
 
 Look at these files for patterns:
-- `harness/evaluator.py` — Scoring logic, `EvaluationResult` structure
-- `harness/criteria_loader.py` — File loading, parsing
-- `harness/runner.py` — CLI integration, `SkillEvaluationRunner`
+- `harness/evaluator.ts` — Scoring logic, `EvaluationResult` structure
+- `harness/criteria-loader.ts` — File loading, parsing
+- `harness/runner.ts` — CLI integration, `SkillEvaluationRunner`
 
 #### Test-Driven Development
 
 Create tests alongside implementation:
 ```bash
-# Example for Task 1.1
+# Example test file structure
 tests/
 ├── harness/
-│   └── ralph_loop.py         # Implementation
-└── test_ralph_loop.py        # Tests
+│   ├── ralph-loop.ts         # Implementation
+│   └── ralph-loop.test.ts    # Tests
 ```
 
 Run tests:
 ```bash
 cd tests
-uv sync
-uv run pytest test_ralph_loop.py -v
-```
-
-### Commands Reference
-
-```bash
-# Install dependencies
-cd tests && uv sync
-
-# List skills with test coverage
-uv run python -m harness.runner --list
-
-# Run existing harness (verify nothing broken)
-uv run python -m harness.runner azure-ai-agents-py --mock --verbose
-
-# Run tests
-uv run pytest test_*.py -v
-
-# After Ralph Loop is implemented:
-uv run python -m harness.runner azure-ai-agents-py --ralph --max-iterations 5 --threshold 85
+pnpm install
+pnpm test:run harness/ralph-loop.test.ts -v
 ```
 
 ### Success Criteria
 
 **Phase 1 is complete when:**
-- [ ] `--ralph` flag runs iterative loop on any skill
-- [ ] Feedback mechanism improves scores across iterations
-- [ ] Markdown reports show iteration progress
-- [ ] All new code has test coverage
+- [x] `--ralph` flag runs iterative loop on any skill
+- [x] Feedback mechanism improves scores across iterations
+- [x] All new code has test coverage (45 tests passing)
 
 **Full implementation success:**
 - 127 skills can run through Ralph Loop

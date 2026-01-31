@@ -171,7 +171,12 @@ export interface GenerationResult {
  * Interface for code generation clients.
  */
 export interface CopilotClient {
-  generate(prompt: string, skillName: string): Promise<GenerationResult>;
+  generate(
+    prompt: string,
+    skillName: string,
+    config?: GenerationConfig,
+    scenarioName?: string
+  ): Promise<GenerationResult>;
 }
 
 // =============================================================================
