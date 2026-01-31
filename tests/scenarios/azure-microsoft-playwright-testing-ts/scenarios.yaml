@@ -1,0 +1,304 @@
+# yaml-language-server: $schema=../skill-scenarios.schema.json
+# Test scenarios for azure-microsoft-playwright-testing-ts skill evaluation
+# Each scenario tests a specific usage pattern against acceptance criteria
+
+config:
+  model: gpt-4
+  max_tokens: 2000
+  temperature: 0.3
+
+scenarios:
+  # Basic Service Configuration
+  - name: basic_service_config
+    prompt: |
+      Create a playwright.service.config.ts file that configures Playwright
+      to run tests on Azure cloud-hosted browsers with Linux OS.
+    expected_patterns:
+      - "defineConfig"
+      - "getServiceConfig"
+      - "ServiceOS.LINUX"
+      - "@azure/microsoft-playwright-testing"
+      - "reporter"
+    forbidden_patterns:
+      - "@azure/playwright"
+      - "hardcoded-token"
+    tags:
+      - basic
+      - configuration
+    mock_response: |
+      import { defineConfig } from "@playwright/test";
+      import { getServiceConfig, ServiceOS } from "@azure/microsoft-playwright-testing";
+      import config from "./playwright.config";
+
+      export default defineConfig(
+        config,
+        getServiceConfig(config, {
+          os: ServiceOS.LINUX,
+        }),
+        {
+          reporter: [["list"], ["@azure/microsoft-playwright-testing/reporter"]],
+        }
+      );
+
+  # Full Configuration Options
+  - name: full_service_config_options
+    prompt: |
+      Create a comprehensive playwright.service.config.ts with all configuration
+      options including timeout, network exposure, and reporter settings.
+    expected_patterns:
+      - "defineConfig"
+      - "getServiceConfig"
+      - "timeout"
+      - "exposeNetwork"
+      - "enableGitHubSummary"
+      - "enableResultPublish"
+    forbidden_patterns:
+      - "hardcoded"
+    tags:
+      - advanced
+      - configuration
+    mock_response: |
+      import { defineConfig } from "@playwright/test";
+      import { getServiceConfig, ServiceOS } from "@azure/microsoft-playwright-testing";
+      import config from "./playwright.config";
+
+      export default defineConfig(
+        config,
+        getServiceConfig(config, {
+          os: ServiceOS.LINUX,
+          timeout: 30000,
+          exposeNetwork: "<loopback>",
+          useCloudHostedBrowsers: true,
+        }),
+        {
+          reporter: [
+            ["list"],
+            ["@azure/microsoft-playwright-testing/reporter", {
+              enableGitHubSummary: true,
+              enableResultPublish: true,
+            }],
+          ],
+        }
+      );
+
+  # Custom Credential Configuration
+  - name: custom_credential_config
+    prompt: |
+      Create a playwright.service.config.ts that uses ManagedIdentityCredential
+      for authentication instead of the default.
+    expected_patterns:
+      - "defineConfig"
+      - "getServiceConfig"
+      - "ManagedIdentityCredential"
+      - "credential"
+      - "@azure/identity"
+    forbidden_patterns:
+      - "ACCESS_TOKEN"
+      - "hardcoded"
+    tags:
+      - authentication
+      - managed-identity
+    mock_response: |
+      import { defineConfig } from "@playwright/test";
+      import { ManagedIdentityCredential } from "@azure/identity";
+      import { getServiceConfig, ServiceOS } from "@azure/microsoft-playwright-testing";
+      import config from "./playwright.config";
+
+      export default defineConfig(
+        config,
+        getServiceConfig(config, {
+          os: ServiceOS.LINUX,
+          credential: new ManagedIdentityCredential(),
+        }),
+        {
+          reporter: [["list"], ["@azure/microsoft-playwright-testing/reporter"]],
+        }
+      );
+
+  # Reporting Only (Local Browsers)
+  - name: reporting_only_local
+    prompt: |
+      Create a playwright.service.config.ts that runs tests locally but
+      publishes results to the Playwright Portal.
+    expected_patterns:
+      - "defineConfig"
+      - "getServiceConfig"
+      - "useCloudHostedBrowsers: false"
+      - "reporter"
+    forbidden_patterns:
+      - "useCloudHostedBrowsers: true"
+    tags:
+      - reporting
+      - local
+    mock_response: |
+      import { defineConfig } from "@playwright/test";
+      import { getServiceConfig, ServiceOS } from "@azure/microsoft-playwright-testing";
+      import config from "./playwright.config";
+
+      export default defineConfig(
+        config,
+        getServiceConfig(config, {
+          useCloudHostedBrowsers: false,
+        }),
+        {
+          reporter: [["@azure/microsoft-playwright-testing/reporter"]],
+        }
+      );
+
+  # Manual Browser Connection
+  - name: manual_browser_connection
+    prompt: |
+      Create a Playwright test that manually connects to the cloud browser
+      service using getConnectOptions.
+    expected_patterns:
+      - "getConnectOptions"
+      - "wsEndpoint"
+      - "connect"
+      - "browser.close"
+      - "BrowserType"
+    forbidden_patterns:
+      - "hardcoded"
+    tags:
+      - manual
+      - connection
+    mock_response: |
+      import playwright, { test, expect, BrowserType } from "@playwright/test";
+      import { getConnectOptions } from "@azure/microsoft-playwright-testing";
+
+      test("manual connection", async ({ browserName }) => {
+        const { wsEndpoint, options } = await getConnectOptions();
+        const browser = await (playwright[browserName] as BrowserType).connect(wsEndpoint, options);
+        const context = await browser.newContext();
+        const page = await context.newPage();
+
+        await page.goto("https://example.com");
+        await expect(page).toHaveTitle(/Example/);
+
+        await browser.close();
+      });
+
+  # GitHub Actions Integration
+  - name: github_actions_workflow
+    prompt: |
+      Create a GitHub Actions workflow that runs Playwright tests on
+      Azure cloud browsers with Entra ID authentication.
+    expected_patterns:
+      - "azure/login"
+      - "PLAYWRIGHT_SERVICE_URL"
+      - "id-token: write"
+      - "playwright test"
+      - "playwright.service.config.ts"
+    forbidden_patterns:
+      - "ACCESS_TOKEN"
+    tags:
+      - ci-cd
+      - github-actions
+    mock_response: |
+      name: playwright-ts
+      on: [push, pull_request]
+
+      permissions:
+        id-token: write
+        contents: read
+
+      jobs:
+        test:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+            - run: npm ci
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+
+            - name: Run Tests
+              env:
+                PLAYWRIGHT_SERVICE_URL: ${{ secrets.PLAYWRIGHT_SERVICE_URL }}
+              run: npx playwright test -c playwright.service.config.ts --workers=20
+
+  # Azure Pipelines Integration
+  - name: azure_pipelines_workflow
+    prompt: |
+      Create an Azure Pipelines YAML configuration for running Playwright
+      tests on Azure cloud browsers.
+    expected_patterns:
+      - "AzureCLI"
+      - "PLAYWRIGHT_SERVICE_URL"
+      - "playwright test"
+      - "playwright.service.config.ts"
+    forbidden_patterns:
+      - "ACCESS_TOKEN"
+    tags:
+      - ci-cd
+      - azure-pipelines
+    mock_response: |
+      trigger:
+        - main
+
+      pool:
+        vmImage: 'ubuntu-latest'
+
+      steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '20.x'
+          displayName: 'Install Node.js'
+
+        - script: npm ci
+          displayName: 'Install dependencies'
+
+        - script: npx playwright install --with-deps
+          displayName: 'Install Playwright Browsers'
+
+        - task: AzureCLI@2
+          displayName: Run Playwright Tests
+          env:
+            PLAYWRIGHT_SERVICE_URL: $(PLAYWRIGHT_SERVICE_URL)
+          inputs:
+            azureSubscription: My_Service_Connection
+            scriptType: pscore
+            inlineScript: |
+              npx playwright test -c playwright.service.config.ts --workers=20
+            addSpnToEnvironment: true
+
+  # Windows OS Configuration
+  - name: windows_os_config
+    prompt: |
+      Create a playwright.service.config.ts that runs tests on Windows
+      cloud-hosted browsers.
+    expected_patterns:
+      - "defineConfig"
+      - "getServiceConfig"
+      - "ServiceOS.WINDOWS"
+    forbidden_patterns:
+      - "ServiceOS.LINUX"
+    tags:
+      - configuration
+      - windows
+    mock_response: |
+      import { defineConfig } from "@playwright/test";
+      import { getServiceConfig, ServiceOS } from "@azure/microsoft-playwright-testing";
+      import config from "./playwright.config";
+
+      export default defineConfig(
+        config,
+        getServiceConfig(config, {
+          os: ServiceOS.WINDOWS,
+        }),
+        {
+          reporter: [["list"], ["@azure/microsoft-playwright-testing/reporter"]],
+        }
+      );
