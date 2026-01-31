@@ -50,6 +50,7 @@ ${PROJECT_NAME}/
 │       └── container-app.bicep
 ├── src/
 │   ├── frontend/
+│   │   ├── index.html                # Entry point with mobile meta tags
 │   │   ├── package.json
 │   │   ├── vite.config.ts
 │   │   ├── tailwind.config.js
@@ -57,6 +58,11 @@ ${PROJECT_NAME}/
 │   │   ├── tsconfig.json
 │   │   ├── Dockerfile
 │   │   ├── .eslintrc.cjs
+│   │   ├── public/
+│   │   │   ├── favicon.ico
+│   │   │   ├── favicon.svg
+│   │   │   ├── apple-touch-icon.png
+│   │   │   └── site.webmanifest
 │   │   └── src/
 │   │       ├── App.tsx
 │   │       ├── main.tsx
@@ -399,13 +405,77 @@ export default defineConfig({
 });
 ```
 
+#### src/frontend/index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Theme color for mobile browser chrome -->
+    <meta name="theme-color" content="#0a0a0a" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${PROJECT_NAME}" />
+    <meta property="og:description" content="${PROJECT_DESCRIPTION}" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    <title>${PROJECT_NAME}</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+#### src/frontend/public/site.webmanifest
+```json
+{
+  "name": "${PROJECT_NAME}",
+  "short_name": "${PROJECT_NAME}",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "32x32", "type": "image/x-icon" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ],
+  "theme_color": "#0a0a0a",
+  "background_color": "#0a0a0a",
+  "display": "standalone"
+}
+```
+
 #### src/frontend/tailwind.config.js
 ```javascript
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      // Mobile: safe area insets for notched devices
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      // Mobile: minimum touch target sizes (44px per Apple/Google guidelines)
+      minHeight: {
+        'touch': '44px',
+      },
+      minWidth: {
+        'touch': '44px',
+      },
+    },
   },
   plugins: [],
 };
