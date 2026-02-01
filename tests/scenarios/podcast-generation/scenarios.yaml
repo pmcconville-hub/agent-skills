@@ -20,7 +20,7 @@ scenarios:
       - "replace.*https.*wss"
       - "api_key"
     forbidden_patterns:
-      - "base_url"
+      - "(?<!websocket_)base_url="
       - "https://.*openai/v1"
     tags:
       - setup
@@ -280,7 +280,7 @@ scenarios:
       - "HTTPException"
       - "async def"
     forbidden_patterns:
-      - "def generate"  # Should be async
+      - "(?<!async )def generate"  # Should be async
     tags:
       - fastapi
       - endpoint

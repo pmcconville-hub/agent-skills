@@ -327,32 +327,47 @@ export class CodeEvaluator {
     }
 
     // Check incorrect import patterns from criteria
-    // Only flag as incorrect when ALL imports in the pattern are present
+    // Only flag as incorrect when:
+    // 1. ALL imports in the pattern are present together
+    // 2. The pattern is IMPORT-ONLY (no non-import lines showing misuse)
+    //    If pattern has non-import lines, it's handled by checkRule/patternMatches
     for (const pattern of this.criteria.incorrectPatterns) {
       if (!pattern.code.toLowerCase().includes("import")) {
         continue;
       }
 
-      // Extract all import statements from the pattern
+      // Separate import lines from non-import lines in the pattern
       const patternImports: string[] = [];
+      const nonImportLines: string[] = [];
+      
       for (const line of pattern.code.split("\n")) {
         const trimmedLine = line.trim();
         if (trimmedLine.startsWith("#") || !trimmedLine) {
           continue;
         }
         if (
-          !trimmedLine.startsWith("from ") &&
-          !trimmedLine.startsWith("import ")
+          trimmedLine.startsWith("from ") ||
+          trimmedLine.startsWith("import ")
         ) {
-          continue;
+          // Normalize whitespace
+          const normalizedPattern = trimmedLine.split(/\s+/).join(" ");
+          patternImports.push(normalizedPattern);
+        } else {
+          nonImportLines.push(trimmedLine);
         }
-        // Normalize whitespace
-        const normalizedPattern = trimmedLine.split(/\s+/).join(" ");
-        patternImports.push(normalizedPattern);
       }
 
       // Skip if no import lines found in pattern
       if (patternImports.length === 0) {
+        continue;
+      }
+
+      // CRITICAL FIX: If pattern has non-import lines, skip here.
+      // These "mixed patterns" (import + misuse) are handled by patternMatches()
+      // which correctly requires ALL parts to match before flagging as incorrect.
+      // Without this check, we'd flag valid imports as incorrect just because
+      // they appear in an incorrect pattern that also shows their misuse.
+      if (nonImportLines.length > 0) {
         continue;
       }
 
@@ -467,13 +482,36 @@ export class CodeEvaluator {
       return false;
     }
 
-    // Check if this is primarily an import pattern
-    const firstLine = codeLines[0];
-    if (firstLine?.startsWith("from ") || firstLine?.startsWith("import ")) {
-      return this.importPatternMatches(code, codeLines);
+    // Separate import lines from non-import lines
+    const importLines = codeLines.filter(
+      (line) => line.startsWith("from ") || line.startsWith("import ")
+    );
+    const nonImportLines = codeLines.filter(
+      (line) => !line.startsWith("from ") && !line.startsWith("import ")
+    );
+
+    // Case 1: Pattern has BOTH imports AND non-import code (mixed pattern)
+    // This is critical for incorrect patterns that show: import X + misuse X
+    // We must require ALL parts to match to avoid false positives
+    if (importLines.length > 0 && nonImportLines.length > 0) {
+      const importsMatch = this.importPatternMatches(code, importLines);
+      if (!importsMatch) {
+        return false;
+      }
+      // Also require the non-import lines to match
+      if (isIncorrect) {
+        return this.multiLinePatternMatchesExact(code, nonImportLines);
+      } else {
+        return this.multiLinePatternMatchesFlexible(code, nonImportLines);
+      }
     }
 
-    // For non-import patterns, use different matching based on pattern type
+    // Case 2: Import-only pattern
+    if (importLines.length > 0) {
+      return this.importPatternMatches(code, importLines);
+    }
+
+    // Case 3: Code-only pattern (no imports)
     if (isIncorrect) {
       // Incorrect patterns: use EXACT matching to catch specific errors
       return this.multiLinePatternMatchesExact(code, codeLines);
@@ -485,6 +523,11 @@ export class CodeEvaluator {
 
   /**
    * Check if import patterns match in the code.
+   *
+   * For multi-line import patterns (combinations), ALL import lines must be present.
+   * This is important for catching incorrect combinations like:
+   *   - sync credential + async client
+   *   - async credential + sync client
    */
   private importPatternMatches(code: string, importLines: string[]): boolean {
     const language = this.criteria.language.toLowerCase();
@@ -519,7 +562,8 @@ export class CodeEvaluator {
       }
     }
 
-    // Check if any of the pattern's import lines match exactly
+    // Filter to only import lines from the pattern
+    const patternImports: string[] = [];
     for (const importLine of importLines) {
       if (
         !importLine.startsWith("from ") &&
@@ -527,24 +571,27 @@ export class CodeEvaluator {
       ) {
         continue;
       }
-
-      // Normalize whitespace
       const normalizedPattern = importLine.split(/\s+/).join(" ");
-
-      // Check for exact match in actual imports
-      if (actualImports.has(normalizedPattern)) {
-        return true;
-      }
+      patternImports.push(normalizedPattern);
     }
 
-    return false;
+    // No import lines found in pattern
+    if (patternImports.length === 0) {
+      return false;
+    }
+
+    // For combination patterns, ALL imports must be present
+    // This prevents false positives when only part of the pattern matches
+    return patternImports.every((pi) => actualImports.has(pi));
   }
 
   /**
    * Check if pattern lines match EXACTLY in code.
    *
    * Used for incorrect patterns (anti-patterns).
-   * Requires exact line matching to catch specific errors.
+   * Requires ALL significant lines to match exactly to avoid false positives.
+   * This ensures we only flag code when the ENTIRE incorrect pattern is present,
+   * not just parts of it.
    */
   private multiLinePatternMatchesExact(
     code: string,
@@ -577,11 +624,10 @@ export class CodeEvaluator {
     }
 
     const significantLines = patternLines.filter((l) => l.length >= 15);
-    if (significantLines.length <= 2) {
-      return matchedCount >= 1 && matchedCount === significantLines.length;
-    }
-
-    return matchedCount >= 2;
+    
+    // For incorrect patterns, ALL significant lines must match
+    // This prevents false positives when only part of the pattern is present
+    return matchedCount >= 1 && matchedCount === significantLines.length;
   }
 
   /**

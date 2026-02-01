@@ -235,7 +235,8 @@ scenarios:
       - "list_blobs"
       - "azure.storage.blob.aio"
     forbidden_patterns:
-      - "for blob in container_client.list_blobs"
+      # Match sync iteration pattern - note: regex anchored to exclude "async for"
+      - "(?<!async )for blob in"
     tags:
       - async
       - list

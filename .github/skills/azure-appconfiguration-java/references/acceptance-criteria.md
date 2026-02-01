@@ -79,12 +79,14 @@ ConfigurationAsyncClient asyncClient = new ConfigurationClientBuilder()
 
 ### 2.4 Anti-Patterns (ERRORS)
 
-#### ❌ INCORRECT: Hardcoded credentials
+#### ❌ INCORRECT: Hardcoded connection string
 ```java
-// WRONG - hardcoded connection string
-ConfigurationClient client = new ConfigurationClientBuilder()
-    .connectionString("Endpoint=https://example.azconfig.io;Id=xxx;Secret=xxx")
-    .buildClient();
+.connectionString("Endpoint=https://example.azconfig.io;Id=xxx;Secret=xxx")
+```
+
+#### ❌ INCORRECT: Hardcoded endpoint URL
+```java
+.endpoint("https://example.azconfig.io")
 ```
 
 ---

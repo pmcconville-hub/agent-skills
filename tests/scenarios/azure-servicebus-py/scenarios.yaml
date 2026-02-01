@@ -269,7 +269,7 @@ scenarios:
       - "schedule_messages"
       - "cancel_scheduled_messages"
     forbidden_patterns:
-      - "schedule_message"
+      - ".schedule_message("
     tags:
       - scheduling
       - async

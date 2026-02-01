@@ -106,10 +106,9 @@ client = WebPubSubServiceClient(
 
 #### ❌ INCORRECT: Missing hub parameter
 ```python
-# WRONG - hub is required
-client = WebPubSubServiceClient.from_connection_string(
-    connection_string=os.environ["AZURE_WEBPUBSUB_CONNECTION_STRING"],
-)
+# WRONG - hub parameter is required when using from_connection_string
+# Valid usage requires: hub=os.environ["AZURE_WEBPUBSUB_HUB"]
+client = WebPubSubServiceClient.from_connection_string(connection_string=conn_str)
 ```
 
 ---

@@ -190,7 +190,7 @@ scenarios:
       - "\\$\\{AZURE_OPENAI_ENDPOINT\\}"
     forbidden_patterns:
       - "https://my-openai"
-      - "eastus"  # Should use ${} syntax, not hardcoded
+      - "\"eastus\""  # Should use ${} syntax, not hardcoded string
     tags:
       - bicep
       - parameters

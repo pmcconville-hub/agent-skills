@@ -346,12 +346,9 @@ print("Capacity deleted")
 
 #### ❌ INCORRECT: Not waiting for LRO completion
 ```python
-# WRONG - missing .result() on suspend/resume/delete
-client.fabric_capacities.begin_suspend(
-    resource_group_name=resource_group,
-    capacity_name=capacity_name
-)
-# Should call .result() to wait for completion
+# WRONG - assigning poller without calling .result()
+poller = client.fabric_capacities.begin_suspend(resource_group_name=rg, capacity_name=name)
+# poller.result() must be called to wait for completion
 ```
 
 ---
@@ -481,12 +478,9 @@ capacity = client.fabric_capacities.begin_create_or_update(
 
 #### ❌ INCORRECT: Ignoring LRO completion
 ```python
-# WRONG - no wait for long-running operation
-client.fabric_capacities.begin_delete(
-    resource_group_name=resource_group,
-    capacity_name=capacity_name
-)
-# Code continues immediately, deletion may not be complete
+# WRONG - assigning poller without calling .result()
+poller = client.fabric_capacities.begin_delete(resource_group_name=rg, capacity_name=name)
+# Code continues immediately without waiting for deletion
 ```
 
 ---

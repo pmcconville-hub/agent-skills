@@ -323,3 +323,125 @@ pnpm test:run harness/ralph-loop.test.ts -v
 - 127 skills can run through Ralph Loop
 - Average convergence in <5 iterations
 - Quality scores improve by >20% from iteration 1 to final
+
+---
+
+## Pattern Matching: How the Evaluator Works
+
+The evaluator validates generated code against acceptance criteria patterns. Understanding how it works helps you write effective criteria and debug failing tests.
+
+### Pattern Types
+
+| Pattern Type | Purpose | Matching Strategy |
+|--------------|---------|-------------------|
+| **Correct patterns** | Document expected usage | FLEXIBLE matching (allows variations) |
+| **Incorrect patterns** | Document anti-patterns | EXACT matching (catches specific errors) |
+| **Import-only patterns** | Wrong import paths | ALL imports must match |
+| **Mixed patterns** | Import + misuse context | ALL parts must match |
+
+### How Incorrect Patterns Are Evaluated
+
+The evaluator distinguishes between two types of incorrect patterns:
+
+#### 1. Import-Only Patterns (Pure Import Errors)
+
+These show wrong import paths where the import itself is the error:
+
+```python
+# WRONG - clients are in azure.ai.contentsafety, not models
+from azure.ai.contentsafety.models import ContentSafetyClient
+```
+
+**Matching:** If ALL imports in the pattern are present, it's flagged as incorrect.
+
+#### 2. Mixed Patterns (Import + Misuse)
+
+These show a valid import being misused:
+
+```python
+# WRONG - AnalyzeTextOptions is for text analysis only
+from azure.ai.contentsafety.models import AnalyzeTextOptions
+
+request = AnalyzeTextOptions(text="image.jpg")
+response = client.analyze_image(request)  # <-- The actual error
+```
+
+**Matching:** BOTH the imports AND the non-import code (the misuse) must be present. This prevents false positives when:
+- The import is valid for its intended use
+- Only the misuse context makes it incorrect
+
+### Why This Matters
+
+**Bad behavior (before fix):**
+```
+Code: from azure.ai.contentsafety.models import AnalyzeTextOptions
+      request = AnalyzeTextOptions(text="Hello")
+      response = client.analyze_text(request)  # CORRECT usage!
+      
+Result: ❌ FALSE POSITIVE - flagged as incorrect because the import appears
+        in an incorrect pattern, even though the misuse isn't present
+```
+
+**Good behavior (after fix):**
+```
+Code: from azure.ai.contentsafety.models import AnalyzeTextOptions
+      request = AnalyzeTextOptions(text="Hello")
+      response = client.analyze_text(request)  # CORRECT usage!
+      
+Result: ✅ PASSES - the import is only flagged when used incorrectly
+        (e.g., with analyze_image instead of analyze_text)
+```
+
+### Writing Effective Acceptance Criteria
+
+#### For Import-Only Errors
+
+Use when the import path itself is wrong:
+
+```markdown
+### ❌ Incorrect: Wrong import path
+\`\`\`python
+# WRONG - clients are not in models submodule
+from azure.ai.contentsafety.models import ContentSafetyClient
+\`\`\`
+```
+
+#### For Misuse Errors
+
+Show the FULL context - both the import and how it's being misused:
+
+```markdown
+### ❌ Incorrect: Using text models for image analysis
+\`\`\`python
+# WRONG - AnalyzeTextOptions is for text, not images
+from azure.ai.contentsafety.models import AnalyzeTextOptions
+
+request = AnalyzeTextOptions(text="image.jpg")
+response = client.analyze_image(request)
+\`\`\`
+```
+
+**Key principle:** The incorrect pattern should be the COMPLETE anti-pattern. Don't just show the import if the error is in how it's used.
+
+### Debugging Failing Tests
+
+| Symptom | Likely Cause | Fix |
+|---------|--------------|-----|
+| False positive (valid code flagged) | Mixed pattern only checking imports | Ensure non-import lines show the actual error |
+| False negative (bad code passes) | Pattern too specific | Relax exact matching or add more pattern variations |
+| Score lower than expected | Multiple patterns matching | Check for overlapping incorrect patterns |
+
+**Debug command:**
+```bash
+pnpm harness <skill> --mock --verbose
+```
+
+This shows which patterns matched and why each scenario passed/failed.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `harness/evaluator.ts` | Pattern matching logic (`patternMatches`, `checkImports`) |
+| `harness/criteria-loader.ts` | Parses acceptance-criteria.md into structured patterns |
+| `harness/types.ts` | `CodePattern`, `EvaluationResult` types |

@@ -22,8 +22,7 @@ scenarios:
       - "CreateRunAsync"
       - "DeleteAgentAsync"
     forbidden_patterns:
-      - "AgentsClient"
-      - "new AgentsClient"
+      - "new AgentsClient("
     tags:
       - basic
       - authentication

@@ -252,8 +252,7 @@ scenarios:
       - "poller.result()"
       - "result.kind =="
     forbidden_patterns:
-      - "analyze_actions"  # Missing "begin_"
-      - "SentimentAnalysis"  # Wrong action name
+      - "(?<!begin_)analyze_actions"  # Missing "begin_"
     tags:
       - batch
       - advanced

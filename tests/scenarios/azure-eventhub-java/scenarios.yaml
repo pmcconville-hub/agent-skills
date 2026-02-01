@@ -202,7 +202,7 @@ scenarios:
       - "updateCheckpoint"
       - "maxBatchSize"
     forbidden_patterns:
-      - "processEvent("
+      - ".processEvent(eventContext"  # SDK single-event callback (vs batch)
     tags:
       - consumer
       - batching

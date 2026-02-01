@@ -180,7 +180,7 @@ scenarios:
       - "MaxThroughput"
       - "CreateOrUpdateCosmosDBSqlContainerThroughputAsync"
     forbidden_patterns:
-      - "Throughput = 400"  # Manual throughput
+      - "Throughput = 400,"  # Manual throughput
     tags:
       - throughput
       - autoscale

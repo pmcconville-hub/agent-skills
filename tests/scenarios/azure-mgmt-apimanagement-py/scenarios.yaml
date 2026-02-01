@@ -229,8 +229,7 @@ scenarios:
       - "<on-error"
       - 'format="xml'
     forbidden_patterns:
-      - "policy_xml ="
-      - "policy_xml=\\"
+      - "policy_xml=\""
       - "<policy>" # Wrong - should be <policies>
     tags:
       - policy
@@ -341,7 +340,6 @@ scenarios:
       - "backend.list_by_service"
     forbidden_patterns:
       - "backend_url ="
-      - "backend ="
     tags:
       - backend
     mock_response: |

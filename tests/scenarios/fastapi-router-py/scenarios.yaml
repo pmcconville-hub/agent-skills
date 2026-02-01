@@ -25,8 +25,8 @@ scenarios:
       - "limit"
       - "offset"
     forbidden_patterns:
-      - "def list_projects"
-      - "def create_project"
+      - "(?<!async )def list_projects"
+      - "(?<!async )def create_project"
       - "@router.post.*response_model=list"
       - "\\.get\\(.*list"
     tags:
@@ -131,7 +131,7 @@ scenarios:
       - "HTTP_403_FORBIDDEN"
     forbidden_patterns:
       - "current_user: str"  # Should be User type
-      - "current_user: Optional"  # Should have full type
+      - "current_user: Optional[^\\[]"  # Should have full type like Optional[User]
       - "get_current_user_required.*Optional"  # Can't be both required and optional
     tags:
       - authentication
@@ -237,7 +237,7 @@ scenarios:
     forbidden_patterns:
       - "response_model=dict"
       - "response_model=str"
-      - "response_model=list"  # Should specify type: list[Model]
+      - "response_model=list[^\\[]"  # Should specify type: list[Model], not just list
       - "-> dict:"
       - "-> Any:"
     tags:
@@ -543,8 +543,8 @@ scenarios:
       - "NotificationService"
       - "HTTPException"
     forbidden_patterns:
-      - "def list_notifications"  # Should be async
-      - "service.get_notification"  # Should be await
+      - "(?<!async )def list_notifications"  # Should be async
+      - "(?<!await )service\\.get_notification"  # Should be await
       - "Depends\\(\\)"  # Should have function
       - "NotificationService\\(\\)"  # Should be via Depends
     tags:

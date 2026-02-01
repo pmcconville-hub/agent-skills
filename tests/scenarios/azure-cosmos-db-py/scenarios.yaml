@@ -19,7 +19,7 @@ scenarios:
       - "connection_verify=False"
       - "CosmosClient"
     forbidden_patterns:
-      - "key="
+      - 'key="'
       - "ClientSecretCredential"
     tags:
       - authentication

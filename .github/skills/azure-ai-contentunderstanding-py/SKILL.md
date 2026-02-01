@@ -19,29 +19,28 @@ pip install azure-ai-contentunderstanding
 ## Environment Variables
 
 ```bash
-AZURE_CONTENTUNDERSTANDING_ENDPOINT=https://<resource>.cognitiveservices.azure.com/
+CONTENTUNDERSTANDING_ENDPOINT=https://<resource>.cognitiveservices.azure.com/
 ```
 
 ## Authentication
 
 ```python
+import os
 from azure.ai.contentunderstanding import ContentUnderstandingClient
 from azure.identity import DefaultAzureCredential
-import os
 
-client = ContentUnderstandingClient(
-    endpoint=os.environ["AZURE_CONTENTUNDERSTANDING_ENDPOINT"],
-    credential=DefaultAzureCredential()
-)
+endpoint = os.environ["CONTENTUNDERSTANDING_ENDPOINT"]
+credential = DefaultAzureCredential()
+client = ContentUnderstandingClient(endpoint=endpoint, credential=credential)
 ```
 
 ## Core Workflow
 
 Content Understanding operations are asynchronous long-running operations:
 
-1. **Begin Analysis** — Start the analysis operation (returns immediately with operation location)
+1. **Begin Analysis** — Start the analysis operation with `begin_analyze()` (returns a poller)
 2. **Poll for Results** — Poll until analysis completes (SDK handles this with `.result()`)
-3. **Process Results** — Extract structured results from `AnalyzeResult`
+3. **Process Results** — Extract structured results from `AnalyzeResult.contents`
 
 ## Prebuilt Analyzers
 
@@ -56,76 +55,95 @@ Content Understanding operations are asynchronous long-running operations:
 ## Analyze Document
 
 ```python
+import os
 from azure.ai.contentunderstanding import ContentUnderstandingClient
+from azure.ai.contentunderstanding.models import AnalyzeInput
 from azure.identity import DefaultAzureCredential
 
+endpoint = os.environ["CONTENTUNDERSTANDING_ENDPOINT"]
 client = ContentUnderstandingClient(
     endpoint=endpoint,
     credential=DefaultAzureCredential()
 )
 
 # Analyze document from URL
-poller = client.begin_analyze_document(
+poller = client.begin_analyze(
     analyzer_id="prebuilt-documentSearch",
-    analyze_request={"url": "https://example.com/document.pdf"}
+    inputs=[AnalyzeInput(url="https://example.com/document.pdf")]
 )
 
 result = poller.result()
 
-# Access markdown content
-print(result.content.markdown)
-
-# Access detailed document structure
-for page in result.content.pages:
-    print(f"Page {page.page_number}: {len(page.lines)} lines")
+# Access markdown content (contents is a list)
+content = result.contents[0]
+print(content.markdown)
 ```
 
-## Analyze from File
+## Access Document Content Details
 
 ```python
-with open("document.pdf", "rb") as f:
-    poller = client.begin_analyze_document(
-        analyzer_id="prebuilt-documentSearch",
-        analyze_request={"file": f}
-    )
-    result = poller.result()
+from azure.ai.contentunderstanding.models import MediaContentKind, DocumentContent
+
+content = result.contents[0]
+if content.kind == MediaContentKind.DOCUMENT:
+    document_content: DocumentContent = content  # type: ignore
+    print(document_content.start_page_number)
+```
+
+## Analyze Image
+
+```python
+from azure.ai.contentunderstanding.models import AnalyzeInput
+
+poller = client.begin_analyze(
+    analyzer_id="prebuilt-imageSearch",
+    inputs=[AnalyzeInput(url="https://example.com/image.jpg")]
+)
+result = poller.result()
+content = result.contents[0]
+print(content.markdown)
 ```
 
 ## Analyze Video
 
 ```python
-poller = client.begin_analyze_document(
+from azure.ai.contentunderstanding.models import AnalyzeInput
+
+poller = client.begin_analyze(
     analyzer_id="prebuilt-videoSearch",
-    analyze_request={"url": "https://example.com/video.mp4"}
+    inputs=[AnalyzeInput(url="https://example.com/video.mp4")]
 )
 
 result = poller.result()
 
 # Access video content (AudioVisualContent)
-video_content = result.content
+content = result.contents[0]
 
 # Get transcript phrases with timing
-for phrase in video_content.transcript_phrases:
+for phrase in content.transcript_phrases:
     print(f"[{phrase.start_time} - {phrase.end_time}]: {phrase.text}")
 
 # Get key frames (for video)
-for frame in video_content.key_frames:
+for frame in content.key_frames:
     print(f"Frame at {frame.time}: {frame.description}")
 ```
 
 ## Analyze Audio
 
 ```python
-poller = client.begin_analyze_document(
+from azure.ai.contentunderstanding.models import AnalyzeInput
+
+poller = client.begin_analyze(
     analyzer_id="prebuilt-audioSearch",
-    analyze_request={"url": "https://example.com/audio.mp3"}
+    inputs=[AnalyzeInput(url="https://example.com/audio.mp3")]
 )
 
 result = poller.result()
 
 # Access audio transcript
-for phrase in result.content.transcript_phrases:
-    print(f"[{phrase.start_time}]: {phrase.text}")
+content = result.contents[0]
+for phrase in content.transcript_phrases:
+    print(f"[{phrase.start_time}] {phrase.text}")
 ```
 
 ## Custom Analyzers
@@ -159,9 +177,11 @@ analyzer = client.create_analyzer(
 )
 
 # Use custom analyzer
-poller = client.begin_analyze_document(
+from azure.ai.contentunderstanding.models import AnalyzeInput
+
+poller = client.begin_analyze(
     analyzer_id="my-invoice-analyzer",
-    analyze_request={"url": "https://example.com/invoice.pdf"}
+    inputs=[AnalyzeInput(url="https://example.com/invoice.pdf")]
 )
 
 result = poller.result()
@@ -190,20 +210,26 @@ client.delete_analyzer("my-custom-analyzer")
 
 ```python
 import asyncio
+import os
 from azure.ai.contentunderstanding.aio import ContentUnderstandingClient
+from azure.ai.contentunderstanding.models import AnalyzeInput
 from azure.identity.aio import DefaultAzureCredential
 
 async def analyze_document():
+    endpoint = os.environ["CONTENTUNDERSTANDING_ENDPOINT"]
+    credential = DefaultAzureCredential()
+    
     async with ContentUnderstandingClient(
         endpoint=endpoint,
-        credential=DefaultAzureCredential()
+        credential=credential
     ) as client:
-        poller = await client.begin_analyze_document(
+        poller = await client.begin_analyze(
             analyzer_id="prebuilt-documentSearch",
-            analyze_request={"url": "https://example.com/doc.pdf"}
+            inputs=[AnalyzeInput(url="https://example.com/doc.pdf")]
         )
         result = await poller.result()
-        return result.content.markdown
+        content = result.contents[0]
+        return content.markdown
 
 asyncio.run(analyze_document())
 ```
@@ -217,6 +243,18 @@ asyncio.run(analyze_document())
 
 Both derive from `MediaContent` which provides basic info and markdown representation.
 
+## Model Imports
+
+```python
+from azure.ai.contentunderstanding.models import (
+    AnalyzeInput,
+    AnalyzeResult,
+    MediaContentKind,
+    DocumentContent,
+    AudioVisualContent,
+)
+```
+
 ## Client Types
 
 | Client | Purpose |
@@ -226,10 +264,10 @@ Both derive from `MediaContent` which provides basic info and markdown represent
 
 ## Best Practices
 
-1. **Use prebuilt analyzers** for common scenarios (document/image/audio/video search)
-2. **Create custom analyzers** only for domain-specific field extraction
-3. **Use async client** for high-throughput scenarios
-4. **Cache analyzer configurations** — they don't change frequently
-5. **Handle long-running operations** — video/audio analysis can take minutes
-6. **Use URL sources** when possible to avoid upload overhead
-7. **Configure model deployments** before using prebuilt analyzers
+1. **Use `begin_analyze` with `AnalyzeInput`** — this is the correct method signature
+2. **Access results via `result.contents[0]`** — results are returned as a list
+3. **Use prebuilt analyzers** for common scenarios (document/image/audio/video search)
+4. **Create custom analyzers** only for domain-specific field extraction
+5. **Use async client** for high-throughput scenarios with `azure.identity.aio` credentials
+6. **Handle long-running operations** — video/audio analysis can take minutes
+7. **Use URL sources** when possible to avoid upload overhead
