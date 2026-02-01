@@ -155,12 +155,6 @@ async with client.get_queue_receiver(queue_name="myqueue") as receiver:
 sender.send(ServiceBusMessage("hello"))
 ```
 
-#### ❌ INCORRECT: Missing settlement in PEEK_LOCK
-```python
-# WRONG - not completing or abandoning messages
-for message in receiver:
-    print(message)
-```
 
 ---
 

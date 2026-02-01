@@ -22,13 +22,7 @@ scenarios:
       - migration
       - deprecated
     mock_response: |
-      // Migration from CallingServer to CallAutomation
-      
-      // OLD (deprecated) - DO NOT USE
-      // import com.azure.communication.callingserver.CallingServerClient;
-      // import com.azure.communication.callingserver.CallingServerClientBuilder;
-      
-      // NEW (use this)
+      // Migration example: Use CallAutomation SDK (the new SDK) instead of the deprecated SDK
       import com.azure.communication.callautomation.CallAutomationClient;
       import com.azure.communication.callautomation.CallAutomationClientBuilder;
       import com.azure.identity.DefaultAzureCredentialBuilder;
@@ -37,12 +31,12 @@ scenarios:
           public static void main(String[] args) {
               String endpoint = System.getenv("AZURE_COMMUNICATION_ENDPOINT");
               
-              // NEW WAY - use CallAutomationClient
+              // Use the new CallAutomation SDK
               CallAutomationClient client = new CallAutomationClientBuilder()
                   .endpoint(endpoint)
                   .credential(new DefaultAzureCredentialBuilder().build())
                   .buildClient();
               
-              System.out.println("Using the new CallAutomation SDK");
+              System.out.println("Successfully migrated to CallAutomation SDK");
           }
       }

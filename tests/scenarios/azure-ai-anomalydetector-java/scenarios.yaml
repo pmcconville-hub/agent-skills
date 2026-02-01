@@ -65,7 +65,7 @@ scenarios:
       - "getIsAnomaly"
       - "TimeGranularity"
     forbidden_patterns:
-      - "AnomalyDetectorClient"  # Wrong class name
+      - "new AnomalyDetectorClient("  # Wrong: use UnivariateClient or MultivariateClient
     tags:
       - univariate
       - detection

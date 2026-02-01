@@ -145,13 +145,10 @@ queue_client = service_client.get_queue_client("tasks")
 
 ### 4.3 Anti-Patterns (ERRORS)
 
-#### ❌ INCORRECT: Missing queue_name
+#### ❌ INCORRECT: QueueClient without queue_name parameter
 ```python
-# WRONG - queue_name is required
-queue_client = QueueClient(
-    account_url=os.environ["AZURE_STORAGE_ACCOUNT_URL"],
-    credential=DefaultAzureCredential(),
-)
+# WRONG - QueueClient instantiated with only account_url and credential, missing queue_name
+QueueClient(account_url=url, credential=cred)
 ```
 
 ---

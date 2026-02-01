@@ -161,11 +161,8 @@ async for event in conn:
 ### 5.3 ❌ INCORRECT: Missing Error Handling
 
 ```python
-# WRONG - No error handling
-async for event in conn:
-    if event.type == "response.output_audio.delta":
-        audio_chunks.append(base64.b64decode(event.delta))
-    # Missing: error event handling
+# WRONG - Ignoring error events
+if event.type == "error": pass
 ```
 
 ---

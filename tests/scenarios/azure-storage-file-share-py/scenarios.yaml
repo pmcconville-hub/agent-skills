@@ -108,7 +108,7 @@ scenarios:
       - "list_directories_and_files"
       - "delete_directory"
     forbidden_patterns:
-      - "delete_share"
+      - "share_client.delete_share"
     tags:
       - directory
       - listing

@@ -53,8 +53,8 @@ scenarios:
       - "delete_entity"
       - "UpdateMode"
     forbidden_patterns:
-      - "partition_key"
-      - "row_key"
+      - "\"partition_key\":"
+      - "\"row_key\":"
     tags:
       - crud
       - entities
@@ -132,7 +132,7 @@ scenarios:
       - "query_filter"
       - "parameters"
     forbidden_patterns:
-      - "filter="
+      - "(?<!query_)filter="
     tags:
       - query
       - filtering

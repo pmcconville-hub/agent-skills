@@ -88,20 +88,24 @@ VoiceLiveAsyncClient client = new VoiceLiveClientBuilder()
 
 ### 2.3 Anti-Patterns (ERRORS)
 
-#### ❌ INCORRECT: Hardcoded credentials
+#### ❌ INCORRECT: Hardcoded endpoint URL
 ```java
-// WRONG - hardcoded values
-VoiceLiveAsyncClient client = new VoiceLiveClientBuilder()
-    .endpoint("https://myresource.openai.azure.com")
-    .credential(new AzureKeyCredential("hardcoded-key"))
-    .buildAsyncClient();
+.endpoint("https://myresource.openai.azure.com")
 ```
 
-#### ❌ INCORRECT: Using sync client
+#### ❌ INCORRECT: Hardcoded API key
 ```java
-// WRONG - VoiceLive only supports async client
+.credential(new AzureKeyCredential("hardcoded-key"))
+```
+
+#### ❌ INCORRECT: Using sync client method
+```java
+.buildClient();
+```
+
+#### ❌ INCORRECT: Sync client class (does not exist)
+```java
 VoiceLiveClient client = new VoiceLiveClientBuilder()
-    .buildClient();  // This doesn't exist
 ```
 
 ---

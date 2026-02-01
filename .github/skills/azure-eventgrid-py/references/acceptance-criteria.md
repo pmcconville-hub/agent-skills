@@ -106,9 +106,9 @@ async with EventGridPublisherClient(endpoint, DefaultAzureCredential()) as clien
 
 ### 3.3 ❌ INCORRECT: Missing client cleanup
 ```python
-# WRONG - no context manager or explicit close
 client = EventGridPublisherClient(endpoint, DefaultAzureCredential())
 client.send(event)
+print("done without cleanup")
 ```
 
 ---

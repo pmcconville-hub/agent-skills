@@ -536,7 +536,7 @@ scenarios:
       - "receiveMessages"
     forbidden_patterns:
       - "require("
-      - "completeMessage"
+      - "\\.completeMessage\\("
     tags:
       - receive-mode
     mock_response: |

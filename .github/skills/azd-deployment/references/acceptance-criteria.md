@@ -76,13 +76,9 @@ hooks:
 
 ```yaml
 # WRONG - Missing remoteBuild: true causes issues on ARM Macs
-services:
-  backend:
-    project: ./src/backend
-    language: python
-    host: containerapp
-    docker:
-      path: ./Dockerfile
+docker:
+  path: ./Dockerfile
+  remoteBuild: false
 ```
 
 ### 1.4 ❌ INCORRECT: Wrong host type

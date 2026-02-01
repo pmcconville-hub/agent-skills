@@ -205,7 +205,7 @@ scenarios:
       - "min_instances"
       - "max_instances"
     forbidden_patterns:
-      - "create_or_update"  # Compute uses begin_create_or_update
+      - "compute.create_or_update"
       - "type=AmlCompute"  # type is string
     tags:
       - compute
@@ -250,7 +250,7 @@ scenarios:
       - "job.status"
     forbidden_patterns:
       - "\\{\\{inputs"  # Must use ${{inputs.param}} format
-      - "uri_folder"  # Must be quoted string
+      - "Input(uri_folder"  # Must be quoted string
     tags:
       - jobs
       - training

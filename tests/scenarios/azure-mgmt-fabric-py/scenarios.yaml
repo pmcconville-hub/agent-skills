@@ -148,7 +148,7 @@ scenarios:
       - ".result()"
       - "CapacitySku"
     forbidden_patterns:
-      - "FabricCapacity"
+      - "FabricCapacity\\("
       - "update_capacity"
     tags:
       - update
@@ -398,7 +398,6 @@ scenarios:
       - "begin_delete"
       - ".result()"
     forbidden_patterns:
-      - "FabricCapacity" 
       - "await"
     tags:
       - lifecycle

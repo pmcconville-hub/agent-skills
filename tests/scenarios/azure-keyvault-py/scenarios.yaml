@@ -114,7 +114,7 @@ scenarios:
       - "begin_delete_key"
       - "result()"
     forbidden_patterns:
-      - "delete_key("
+      - ".delete_key("
       - "from azure.keyvault import"
     tags:
       - keys
@@ -148,7 +148,7 @@ scenarios:
       - "get_certificate"
       - "begin_delete_certificate"
     forbidden_patterns:
-      - "create_certificate("
+      - ".create_certificate("
       - "KeyVaultClient"
     tags:
       - certificates

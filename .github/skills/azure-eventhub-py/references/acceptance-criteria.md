@@ -220,6 +220,7 @@ def on_event(partition_context, event):
 # WRONG - checkpoint store requires update_checkpoint to persist progress
 def on_event(partition_context, event):
     print(event.body_as_str())
+    return  # No checkpoint update!
 ```
 
 ---

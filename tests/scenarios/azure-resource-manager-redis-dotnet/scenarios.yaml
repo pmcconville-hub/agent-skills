@@ -390,7 +390,7 @@ scenarios:
       - "abortConnect=False"
     forbidden_patterns:
       - "ssl=False"
-      - "Port"  # Should use SslPort
+      - "(?<!Ssl)Port"  # Should use SslPort
     tags:
       - connection
       - data-plane

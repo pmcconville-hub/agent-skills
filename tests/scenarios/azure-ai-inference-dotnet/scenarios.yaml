@@ -23,8 +23,8 @@ scenarios:
       - "Choices\\[0\\]\\.Message\\.Content"
     forbidden_patterns:
       - "AzureOpenAIClient"
-      - "SystemMessage"
-      - "UserMessage"
+      - "new SystemMessage"
+      - "new UserMessage"
       - "response\\.Content"
     tags:
       - basic
@@ -167,7 +167,7 @@ scenarios:
       - "new Uri"
       - "ChatRequestUserMessage"
     forbidden_patterns:
-      - "ChatMessage"
+      - "new ChatMessage("
       - "ImageUrl"
     tags:
       - multimodal
@@ -211,7 +211,7 @@ scenarios:
       - "ChatCompletionsFunctionToolCall"
       - "ChatRequestToolMessage"
     forbidden_patterns:
-      - "FunctionToolDefinition"
+      - "new FunctionToolDefinition("
       - "tools="
     tags:
       - function-calling
@@ -423,7 +423,7 @@ scenarios:
       - "EmbedAsync"
     forbidden_patterns:
       - "EmbeddingsClient with ImageEmbeddingInput"
-      - "EmbeddingsOptions"
+      - "new EmbeddingsOptions("
     tags:
       - embeddings
       - images

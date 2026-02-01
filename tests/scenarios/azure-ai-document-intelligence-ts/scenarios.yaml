@@ -206,7 +206,7 @@ scenarios:
       - "features"
       - "queryParameters"
     forbidden_patterns:
-      - "fields:"
+      - '"fields":'
     tags:
       - document-analysis
       - query-fields

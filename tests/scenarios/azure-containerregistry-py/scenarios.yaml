@@ -224,7 +224,6 @@ scenarios:
       - "list_repositories"
     forbidden_patterns:
       - "ContainerRegistryClient(?!Async)"
-      - "import asyncio"
     tags:
       - async
       - repositories

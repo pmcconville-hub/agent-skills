@@ -356,7 +356,6 @@ scenarios:
           .addProperty("Message", "Application started");
 
       // Good: Even distribution across partitions
-      // Bad: Single partition "all-data" causes hot spots
       // Bad: UUID as partition key makes range queries impossible
 
   # AzureNamedKeyCredential

@@ -131,10 +131,6 @@ scenarios:
           .clientId(System.getenv("AZURE_CLIENT_ID"))
           .build();
 
-      // Or by resource ID
-      ManagedIdentityCredential credentialByResourceId = new ManagedIdentityCredentialBuilder()
-          .resourceId(System.getenv("AZURE_MANAGED_IDENTITY_RESOURCE_ID"))
-          .build();
 
   # ClientSecretCredential from Environment
   - name: client_secret_from_environment

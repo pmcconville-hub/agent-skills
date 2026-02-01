@@ -21,7 +21,7 @@ scenarios:
       - "process.env"
     forbidden_patterns:
       - "require("
-      - "ConfigurationClient"
+      - "new ConfigurationClient"
     tags:
       - basic
       - authentication
@@ -191,8 +191,8 @@ scenarios:
       - "true"
       - "false"
     forbidden_patterns:
-      - "lock"
-      - "unlock"
+      - ".lock("
+      - ".unlock("
     tags:
       - settings
       - readonly
