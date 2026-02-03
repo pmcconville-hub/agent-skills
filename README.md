@@ -62,7 +62,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 
 | Resource | Description |
 |----------|-------------|
-| **[123 Skills](#skill-catalog)** | Domain-specific knowledge for Azure SDK and Foundry development |
+| **[124 Skills](#skill-catalog)** | Domain-specific knowledge for Azure SDK and Foundry development |
 | **[Custom Agents](#agents)** | Role-specific agents (backend, frontend, infrastructure, planner) |
 | **[AGENTS.md](AGENTS.md)** | Template for configuring agent behavior in your projects |
 | **[MCP Configs](#mcp-servers)** | Pre-configured servers for docs, GitHub, browser automation |
@@ -72,13 +72,13 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 
 ## Skill Catalog
 
-> 123 skills in `.github/skills/` — flat structure with language suffixes for automatic discovery
+> 124 skills in `.github/skills/` — flat structure with language suffixes for automatic discovery
 
 | Language | Count | Suffix | 
 |----------|-------|--------|
 | [Core](#core) | 5 | — |
 | [Python](#python) | 41 | `-py` |
-| [.NET](#net) | 28 | `-dotnet` |
+| [.NET](#net) | 29 | `-dotnet` |
 | [TypeScript](#typescript) | 23 | `-ts` |
 | [Java](#java) | 26 | `-java` |
 
@@ -211,10 +211,10 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 
 ### .NET
 
-> 28 skills • suffix: `-dotnet`
+> 29 skills • suffix: `-dotnet`
 
 <details>
-<summary><strong>Foundry & AI</strong> (7 skills)</summary>
+<summary><strong>Foundry & AI</strong> (8 skills)</summary>
 
 | Skill | Description |
 |-------|-------------|
@@ -225,6 +225,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 | [azure-ai-voicelive-dotnet](.github/skills/azure-ai-voicelive-dotnet/) | Voice Live — real-time voice AI with bidirectional WebSocket. |
 | [azure-mgmt-weightsandbiases-dotnet](.github/skills/azure-mgmt-weightsandbiases-dotnet/) | Weights & Biases — ML experiment tracking via Azure Marketplace. |
 | [azure-search-documents-dotnet](.github/skills/azure-search-documents-dotnet/) | AI Search — full-text, vector, semantic, hybrid search. |
+| [m365-agents-dotnet](.github/skills/m365-agents-dotnet/) | Microsoft 365 Agents SDK — ASP.NET Core hosting, AgentApplication routing, Copilot Studio client. |
 
 </details>
 
@@ -446,7 +447,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 AGENTS.md                # Agent configuration template
 
 .github/
-├── skills/              # All 123 skills (flat structure)
+├── skills/              # All 124 skills (flat structure)
 ├── prompts/             # Reusable prompt templates
 ├── agents/              # Agent persona definitions
 ├── scripts/             # Automation scripts (doc scraping)
@@ -580,13 +581,13 @@ pnpm test
 
 ### Test Coverage Summary
 
-**123 skills with 1114 test scenarios** — all skills have acceptance criteria and test scenarios.
+**124 skills with 1144 test scenarios** — all skills have acceptance criteria and test scenarios.
 
 | Language | Skills | Scenarios | Top Skills by Scenarios |
 |----------|--------|-----------|-------------------------|
 | Core | 5 | 51 | `azd-deployment` (8), `github-issue-creator` (8), `mcp-builder` (8) |
-| Python | 41 | 333 | `azure-ai-projects-py` (12), `pydantic-models-py` (12), `azure-ai-translation-text-py` (11) |
-| .NET | 28 | 286 | `azure-resource-manager-redis-dotnet` (14), `azure-resource-manager-sql-dotnet` (14), `azure-ai-projects-dotnet` (13) |
+| Python | 41 | 359 | `azure-ai-projects-py` (12), `pydantic-models-py` (12), `azure-ai-translation-text-py` (11) |
+| .NET | 29 | 290 | `azure-resource-manager-redis-dotnet` (14), `azure-resource-manager-sql-dotnet` (14), `azure-ai-projects-dotnet` (13) |
 | TypeScript | 23 | 249 | `azure-storage-blob-ts` (17), `azure-servicebus-ts` (14), `azure-ai-contentsafety-ts` (12) |
 | Java | 26 | 195 | `azure-identity-java` (12), `azure-storage-blob-java` (12), `azure-ai-agents-persistent-java` (11) |
 
