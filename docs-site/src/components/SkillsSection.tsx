@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { LanguageTabs, type Language } from './LanguageTabs';
 import { CategoryTabs, type Category } from './CategoryTabs';
-import { CommandPalette } from './CommandPalette';
+import { SearchInput } from './SearchInput';
 import { SkillCard } from './SkillCard';
 
 interface Skill {
@@ -28,6 +28,7 @@ const LANG_DISPLAY: Record<string, string> = {
 export function SkillsSection({ skills }: SkillsSectionProps) {
   const [selectedLang, setSelectedLang] = useState<Language>('all');
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const langCounts = useMemo(() => {
     return skills.reduce((acc, skill) => {
@@ -48,21 +49,20 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
   }, [skills, selectedLang]);
 
   const filteredSkills = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
     return skills.filter(skill => {
       const langMatch = selectedLang === 'all' || skill.lang === selectedLang;
       const catMatch = selectedCategory === 'all' || skill.category === selectedCategory;
-      return langMatch && catMatch;
+      const searchMatch = !query || 
+        skill.name.toLowerCase().includes(query) || 
+        skill.description.toLowerCase().includes(query);
+      return langMatch && catMatch && searchMatch;
     });
-  }, [skills, selectedLang, selectedCategory]);
+  }, [skills, selectedLang, selectedCategory, searchQuery]);
 
   const handleLangChange = useCallback((lang: Language) => {
     setSelectedLang(lang);
     setSelectedCategory('all');
-  }, []);
-
-  const handleSkillSelect = useCallback((skill: Skill) => {
-    const url = `https://github.com/microsoft/skills/tree/main/.github/skills/${skill.name}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
   }, []);
 
   return (
@@ -93,7 +93,11 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
       </div>
 
       <div style={{ marginBottom: 'var(--space-lg)' }}>
-        <CommandPalette skills={skills} onSelect={handleSkillSelect} />
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Search skills by name or description..."
+        />
       </div>
 
       <div style={{ marginBottom: 'var(--space-md)' }}>
@@ -118,6 +122,9 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
         color: 'var(--text-secondary)',
       }}>
         Showing <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{filteredSkills.length}</span> skills
+        {searchQuery && (
+          <span> matching "<span style={{ color: 'var(--text-primary)' }}>{searchQuery}</span>"</span>
+        )}
         {selectedLang !== 'all' && (
           <span> in <span style={{ color: 'var(--text-primary)' }}>{LANG_DISPLAY[selectedLang] || selectedLang}</span></span>
         )}
