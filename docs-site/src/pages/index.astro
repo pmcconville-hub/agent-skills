@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { SkillsSection } from '../components/SkillsSection';
-import AgentCard from '../components/AgentCard.astro';
-import MCPCard from '../components/MCPCard.astro';
+import AgentChip from '../components/AgentChip.astro';
+import MCPChip from '../components/MCPChip.astro';
 import skills from '../data/skills.json';
 import agents from '../data/agents.json';
 import mcpServers from '../data/mcp-servers.json';
@@ -69,41 +69,42 @@ import mcpServers from '../data/mcp-servers.json';
       </div>
     </section>
 
-    <!-- Agents Section -->
-    <section id="agents" class="section">
-      <h2 class="section-title">
-        <span class="section-dot"></span>
-        Agents
-      </h2>
-      <div class="agents-grid">
-        {agents.map((agent) => (
-          <AgentCard
-            emoji={agent.emoji}
-            name={agent.name}
-            description={agent.description}
-            skills={agent.skills}
-            file={agent.file}
-          />
-        ))}
+    <!-- Agents & MCP Section - Compact -->
+    <section id="agents-mcp" class="section section-compact">
+      <div class="compact-row">
+        <h3 class="compact-title">
+          <span class="section-dot"></span>
+          Agents
+        </h3>
+        <div class="chips-container">
+          {agents.map((agent) => (
+            <AgentChip
+              emoji={agent.emoji}
+              name={agent.name}
+              description={agent.description}
+              skills={agent.skills}
+              file={agent.file}
+            />
+          ))}
+        </div>
       </div>
-    </section>
-
-    <!-- MCP Servers Section -->
-    <section id="mcp-servers" class="section">
-      <h2 class="section-title">
-        <span class="section-dot"></span>
-        MCP Servers
-      </h2>
-      <div class="mcp-grid">
-        {mcpServers.map((server) => (
-          <MCPCard
-            emoji={server.emoji}
-            name={server.name}
-            description={server.description}
-            category={server.category}
-            url={server.url}
-          />
-        ))}
+      
+      <div class="compact-row">
+        <h3 class="compact-title">
+          <span class="section-dot"></span>
+          MCP Servers
+        </h3>
+        <div class="chips-container">
+          {mcpServers.map((server) => (
+            <MCPChip
+              emoji={server.emoji}
+              name={server.name}
+              description={server.description}
+              category={server.category}
+              url={server.url}
+            />
+          ))}
+        </div>
       </div>
     </section>
 
@@ -212,6 +213,10 @@ import mcpServers from '../data/mcp-servers.json';
     padding: var(--space-2xl) 0;
   }
 
+  .section-compact {
+    padding: var(--space-xl) 0;
+  }
+
   .section-title {
     display: flex;
     align-items: center;
@@ -235,48 +240,36 @@ import mcpServers from '../data/mcp-servers.json';
     padding: var(--space-xl) 0;
   }
 
-  /* Agents grid */
-  .agents-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
+  /* Compact row layout for Agents & MCP */
+  .compact-row {
+    margin-bottom: var(--space-lg);
   }
 
-  @media (max-width: 1024px) {
-    .agents-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .compact-row:last-child {
+    margin-bottom: 0;
   }
 
-  @media (max-width: 640px) {
-    .agents-grid {
-      grid-template-columns: 1fr;
-    }
+  .compact-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-md) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
-  /* MCP Servers grid */
-  .mcp-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-lg);
+  .compact-title .section-dot {
+    width: 6px;
+    height: 6px;
   }
 
-  @media (max-width: 1200px) {
-    .mcp-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 900px) {
-    .mcp-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .mcp-grid {
-      grid-template-columns: 1fr;
-    }
+  .chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
   }
 
   /* Hero Section - Compact, developer-focused */
