@@ -31,6 +31,12 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<Category>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Number of rows to show when collapsed (responsive: more columns = fewer items visible per row)
+  const COLLAPSED_ROWS = 2;
+  const ITEMS_PER_ROW_DESKTOP = 4;
+  const MAX_VISIBLE_COLLAPSED = COLLAPSED_ROWS * ITEMS_PER_ROW_DESKTOP;
 
   const langCounts = useMemo(() => {
     return skills.reduce((acc, skill) => {
@@ -65,6 +71,17 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
   const handleLangChange = useCallback((lang: Language) => {
     setSelectedLang(lang);
     setSelectedCategory('all');
+    setIsExpanded(false);
+  }, []);
+
+  const handleCategoryChange = useCallback((category: Category) => {
+    setSelectedCategory(category);
+    setIsExpanded(false);
+  }, []);
+
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    setIsExpanded(false);
   }, []);
 
   return (
@@ -72,7 +89,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
       <div style={{ marginBottom: 'var(--space-lg)' }}>
         <SearchInput
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={handleSearchChange}
           placeholder="Search skills by name or description..."
         />
       </div>
@@ -88,7 +105,7 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
       <div style={{ marginBottom: 'var(--space-xl)' }}>
         <CategoryTabs
           selectedCategory={selectedCategory}
-          onSelect={setSelectedCategory}
+          onSelect={handleCategoryChange}
           counts={categoryCounts}
         />
       </div>
@@ -110,24 +127,97 @@ export function SkillsSection({ skills }: SkillsSectionProps) {
         )}
       </div>
 
-      <div className="skills-grid">
-        {filteredSkills.map((skill) => {
-          const mappedSkill: Skill = {
-            name: skill.name,
-            description: skill.description,
-            language: skill.lang,
-            category: skill.category,
-            path: `.github/skills/${skill.name}`,
-            package: skill.package,
-          };
-          return (
-            <SkillCard
-              key={skill.name}
-              skill={mappedSkill}
-              onClick={() => setSelectedSkill(mappedSkill)}
-            />
-          );
-        })}
+      <div style={{ position: 'relative' }}>
+        <div 
+          className="skills-grid"
+          style={{
+            maxHeight: isExpanded ? 'none' : 'calc((180px + var(--space-lg)) * 2)',
+            overflow: 'hidden',
+            transition: 'max-height 0.3s ease-out',
+          }}
+        >
+          {filteredSkills.map((skill) => {
+            const mappedSkill: Skill = {
+              name: skill.name,
+              description: skill.description,
+              language: skill.lang,
+              category: skill.category,
+              path: `.github/skills/${skill.name}`,
+              package: skill.package,
+            };
+            return (
+              <SkillCard
+                key={skill.name}
+                skill={mappedSkill}
+                onClick={() => setSelectedSkill(mappedSkill)}
+              />
+            );
+          })}
+        </div>
+        
+        {!isExpanded && filteredSkills.length > MAX_VISIBLE_COLLAPSED && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '120px',
+            background: 'linear-gradient(to bottom, transparent, var(--bg-primary) 80%)',
+            pointerEvents: 'none',
+          }} />
+        )}
+        
+        {filteredSkills.length > MAX_VISIBLE_COLLAPSED && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: isExpanded ? 'var(--space-xl)' : '-40px',
+            position: 'relative',
+            zIndex: 10,
+          }}>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-sm)',
+                padding: 'var(--space-sm) var(--space-lg)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-primary)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--bg-card-hover)';
+                e.currentTarget.style.borderColor = 'var(--border-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--bg-tertiary)';
+                e.currentTarget.style.borderColor = 'var(--border-primary)';
+              }}
+            >
+              {isExpanded ? (
+                <>
+                  Show Less
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ transform: 'rotate(180deg)' }}>
+                    <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Show More ({filteredSkills.length - MAX_VISIBLE_COLLAPSED} more)
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {filteredSkills.length === 0 && (

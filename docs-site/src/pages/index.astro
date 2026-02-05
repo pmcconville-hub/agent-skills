@@ -32,6 +32,15 @@ import mcpServers from '../data/mcp-servers.json';
     <!-- Skills Section with Filters -->
     <SkillsSection client:load skills={skills} />
 
+    <!-- Plugins Section -->
+    <section id="plugins" class="section">
+      <h2 class="section-title">
+        <span class="section-dot"></span>
+        Plugins
+      </h2>
+      <p class="section-placeholder">Coming soon...</p>
+    </section>
+
     <!-- Agents Section -->
     <section id="agents" class="section">
       <h2 class="section-title">
@@ -183,6 +192,13 @@ import mcpServers from '../data/mcp-servers.json';
     height: 8px;
     background: var(--accent);
     border-radius: 50%;
+  }
+
+  .section-placeholder {
+    color: var(--text-muted);
+    font-size: var(--text-base);
+    font-style: italic;
+    padding: var(--space-xl) 0;
   }
 
   /* Agents grid */
