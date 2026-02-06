@@ -3,18 +3,22 @@
 Batch Evaluation CLI Tool
 
 Run batch evaluations on test datasets using Azure AI Evaluation SDK.
-Supports quality, safety, and custom evaluators with Foundry integration.
+Supports quality, safety, agent, and custom evaluators with Foundry integration.
 
 Usage:
     python run_batch_evaluation.py --data test_data.jsonl --evaluators groundedness relevance
     python run_batch_evaluation.py --data test_data.jsonl --evaluators qa --output results.json
     python run_batch_evaluation.py --data test_data.jsonl --safety --log-to-foundry
+    python run_batch_evaluation.py --data test_data.jsonl --agent --evaluators intent_resolution task_adherence
+    python run_batch_evaluation.py --data test_data.jsonl --tags experiment=v1 model=gpt-4o
 
 Environment Variables:
     AZURE_OPENAI_ENDPOINT      - Azure OpenAI endpoint URL
     AZURE_OPENAI_API_KEY       - Azure OpenAI API key (optional if using DefaultAzureCredential)
     AZURE_OPENAI_DEPLOYMENT    - Model deployment name (default: gpt-4o-mini)
-    AIPROJECT_CONNECTION_STRING - Foundry project connection string (for safety/logging)
+    AZURE_SUBSCRIPTION_ID      - Azure subscription ID (for safety evaluators)
+    AZURE_RESOURCE_GROUP       - Azure resource group (for safety evaluators)
+    AZURE_AI_PROJECT_NAME      - Azure AI project name (for safety evaluators)
 """
 
 import argparse
@@ -30,6 +34,7 @@ from azure.identity import DefaultAzureCredential
 # Available evaluators by category
 QUALITY_EVALUATORS = [
     "groundedness",
+    "groundedness_pro",
     "relevance",
     "coherence",
     "fluency",
@@ -37,7 +42,20 @@ QUALITY_EVALUATORS = [
     "retrieval",
 ]
 NLP_EVALUATORS = ["f1", "rouge", "bleu", "gleu", "meteor"]
-SAFETY_EVALUATORS = ["violence", "sexual", "self_harm", "hate_unfairness"]
+SAFETY_EVALUATORS = [
+    "violence",
+    "sexual",
+    "self_harm",
+    "hate_unfairness",
+    "code_vulnerability",
+    "ungrounded_attributes",
+]
+AGENT_EVALUATORS = [
+    "intent_resolution",
+    "response_completeness",
+    "task_adherence",
+    "tool_call_accuracy",
+]
 COMPOSITE_EVALUATORS = ["qa", "content_safety"]
 
 
@@ -65,27 +83,31 @@ def get_model_config() -> dict[str, Any]:
 
 
 def get_project_scope() -> dict[str, str] | None:
-    """Get Foundry project scope for safety evaluators."""
-    conn_str = os.environ.get("AIPROJECT_CONNECTION_STRING")
-    if not conn_str:
+    """Get Azure AI project scope for safety evaluators."""
+    subscription_id = os.environ.get("AZURE_SUBSCRIPTION_ID")
+    resource_group = os.environ.get("AZURE_RESOURCE_GROUP")
+    project_name = os.environ.get("AZURE_AI_PROJECT_NAME")
+
+    if not all([subscription_id, resource_group, project_name]):
         return None
 
-    from azure.ai.projects import AIProjectClient
-
-    project = AIProjectClient.from_connection_string(
-        conn_str=conn_str, credential=DefaultAzureCredential()
-    )
-    return project.scope
+    return {
+        "subscription_id": subscription_id,
+        "resource_group_name": resource_group,
+        "project_name": project_name,
+    }
 
 
 def build_evaluators(
     evaluator_names: list[str],
     model_config: dict[str, Any],
     project_scope: dict[str, str] | None,
+    is_reasoning_model: bool = False,
 ) -> dict[str, Any]:
     """Build evaluator instances from names."""
     from azure.ai.evaluation import (
         GroundednessEvaluator,
+        GroundednessProEvaluator,
         RelevanceEvaluator,
         CoherenceEvaluator,
         FluencyEvaluator,
@@ -97,6 +119,10 @@ def build_evaluators(
         GleuScoreEvaluator,
         MeteorScoreEvaluator,
         QAEvaluator,
+        IntentResolutionEvaluator,
+        ResponseCompletenessEvaluator,
+        TaskAdherenceEvaluator,
+        ToolCallAccuracyEvaluator,
     )
 
     evaluators = {}
@@ -111,6 +137,14 @@ def build_evaluators(
         "retrieval": RetrievalEvaluator,
     }
 
+    # Agent evaluators
+    agent_map = {
+        "intent_resolution": IntentResolutionEvaluator,
+        "response_completeness": ResponseCompletenessEvaluator,
+        "task_adherence": TaskAdherenceEvaluator,
+        "tool_call_accuracy": ToolCallAccuracyEvaluator,
+    }
+
     # NLP evaluators
     nlp_map = {
         "f1": F1ScoreEvaluator,
@@ -122,16 +156,24 @@ def build_evaluators(
 
     for name in evaluator_names:
         if name in quality_map:
-            evaluators[name] = quality_map[name](model_config)
+            if is_reasoning_model:
+                evaluators[name] = quality_map[name](model_config, is_reasoning_model=True)
+            else:
+                evaluators[name] = quality_map[name](model_config)
+        elif name == "groundedness_pro":
+            if not project_scope:
+                print(f"Warning: Skipping {name} - requires Azure AI project config")
+                continue
+            evaluators[name] = GroundednessProEvaluator(azure_ai_project=project_scope)
+        elif name in agent_map:
+            evaluators[name] = agent_map[name](model_config)
         elif name in nlp_map:
             evaluators[name] = nlp_map[name]()
         elif name == "qa":
             evaluators[name] = QAEvaluator(model_config)
         elif name in SAFETY_EVALUATORS or name == "content_safety":
             if not project_scope:
-                print(
-                    f"Warning: Skipping {name} - requires AIPROJECT_CONNECTION_STRING"
-                )
+                print(f"Warning: Skipping {name} - requires Azure AI project config")
                 continue
             evaluators[name] = build_safety_evaluator(name, project_scope)
         else:
@@ -148,6 +190,8 @@ def build_safety_evaluator(name: str, project_scope: dict[str, str]) -> Any:
         SelfHarmEvaluator,
         HateUnfairnessEvaluator,
         ContentSafetyEvaluator,
+        CodeVulnerabilityEvaluator,
+        UngroundedAttributesEvaluator,
     )
 
     safety_map = {
@@ -156,6 +200,8 @@ def build_safety_evaluator(name: str, project_scope: dict[str, str]) -> Any:
         "self_harm": SelfHarmEvaluator,
         "hate_unfairness": HateUnfairnessEvaluator,
         "content_safety": ContentSafetyEvaluator,
+        "code_vulnerability": CodeVulnerabilityEvaluator,
+        "ungrounded_attributes": UngroundedAttributesEvaluator,
     }
 
     return safety_map[name](azure_ai_project=project_scope)
@@ -167,6 +213,7 @@ def run_evaluation(
     column_mapping: dict[str, str],
     project_scope: dict[str, str] | None = None,
     log_to_foundry: bool = False,
+    tags: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Run batch evaluation."""
     from azure.ai.evaluation import evaluate
@@ -181,6 +228,9 @@ def run_evaluation(
 
     if log_to_foundry and project_scope:
         kwargs["azure_ai_project"] = project_scope
+
+    if tags:
+        kwargs["tags"] = tags
 
     return evaluate(**kwargs)
 
@@ -199,14 +249,27 @@ def main():
         nargs="+",
         default=["groundedness", "relevance", "coherence"],
         help=f"Evaluators to run. Quality: {QUALITY_EVALUATORS}, "
-        f"NLP: {NLP_EVALUATORS}, Composite: {COMPOSITE_EVALUATORS}",
+        f"NLP: {NLP_EVALUATORS}, Agent: {AGENT_EVALUATORS}, Composite: {COMPOSITE_EVALUATORS}",
     )
     parser.add_argument(
         "--safety", action="store_true", help="Include all safety evaluators"
     )
+    parser.add_argument(
+        "--agent", action="store_true", help="Include all agent evaluators"
+    )
+    parser.add_argument(
+        "--reasoning-model",
+        action="store_true",
+        help="Use reasoning model configuration (for o1/o3 models)",
+    )
     parser.add_argument("--output", "-o", help="Output file for results (JSON)")
     parser.add_argument(
         "--log-to-foundry", action="store_true", help="Log results to Foundry project"
+    )
+    parser.add_argument(
+        "--tags",
+        nargs="*",
+        help="Tags for experiment tracking (format: key=value)",
     )
     parser.add_argument(
         "--query-column",
@@ -254,13 +317,29 @@ def main():
 
     project_scope = get_project_scope()
 
+    # Parse tags
+    tags = None
+    if args.tags:
+        tags = {}
+        for tag in args.tags:
+            if "=" in tag:
+                key, value = tag.split("=", 1)
+                tags[key] = value
+
     # Build evaluator list
     evaluator_names = list(args.evaluators)
     if args.safety:
         evaluator_names.extend(SAFETY_EVALUATORS)
+    if args.agent:
+        evaluator_names.extend(AGENT_EVALUATORS)
 
     # Build evaluators
-    evaluators = build_evaluators(evaluator_names, model_config, project_scope)
+    evaluators = build_evaluators(
+        evaluator_names,
+        model_config,
+        project_scope,
+        is_reasoning_model=args.reasoning_model,
+    )
 
     if not evaluators:
         print("Error: No valid evaluators configured")
@@ -268,6 +347,8 @@ def main():
 
     print(f"Running evaluation with: {list(evaluators.keys())}")
     print(f"Data file: {args.data}")
+    if tags:
+        print(f"Tags: {tags}")
 
     # Run evaluation
     try:
@@ -277,6 +358,7 @@ def main():
             column_mapping=column_mapping,
             project_scope=project_scope,
             log_to_foundry=args.log_to_foundry,
+            tags=tags,
         )
     except Exception as e:
         print(f"Error during evaluation: {e}")
@@ -298,7 +380,7 @@ def main():
     # Save to file if requested
     if args.output:
         output_path = Path(args.output)
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(
                 {
                     "metrics": metrics,

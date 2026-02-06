@@ -28,6 +28,29 @@ model_config = AzureOpenAIModelConfiguration(
 )
 ```
 
+## Azure AI Project Configuration
+
+Safety evaluators and Foundry logging require an Azure AI project scope:
+
+```python
+# Option 1: Dict configuration
+azure_ai_project = {
+    "subscription_id": os.environ["AZURE_SUBSCRIPTION_ID"],
+    "resource_group_name": os.environ["AZURE_RESOURCE_GROUP"],
+    "project_name": os.environ["AZURE_AI_PROJECT_NAME"],
+}
+
+# Option 2: From AIProjectClient
+from azure.ai.projects import AIProjectClient
+from azure.identity import DefaultAzureCredential
+
+project = AIProjectClient.from_connection_string(
+    conn_str="<connection-string>",
+    credential=DefaultAzureCredential()
+)
+azure_ai_project = project.scope
+```
+
 ## AI-Assisted Quality Evaluators
 
 ### GroundednessEvaluator
@@ -49,15 +72,39 @@ result = groundedness(
 # Returns:
 # {
 #     "groundedness": 5,           # Score 1-5
+#     "gpt_groundedness": 5,       # Raw GPT score
 #     "groundedness_reason": "...", # Explanation
-#     "groundedness_result": "pass" # pass/fail based on threshold
+#     "groundedness_result": "pass", # pass/fail based on threshold
+#     "groundedness_threshold": 3,
+#     "groundedness_prompt_tokens": ...,
+#     "groundedness_completion_tokens": ...,
+#     "groundedness_model": "gpt-4o-mini"
 # }
+
+# For reasoning models (o1/o3)
+groundedness_reasoning = GroundednessEvaluator(model_config, is_reasoning_model=True)
 ```
 
 **Input Requirements:**
 - `query`: The user's question
 - `context`: Source documents/information
 - `response`: The model's response to evaluate
+
+### GroundednessProEvaluator
+
+Service-based groundedness evaluation (no model config needed).
+
+```python
+from azure.ai.evaluation import GroundednessProEvaluator
+
+groundedness_pro = GroundednessProEvaluator(azure_ai_project=azure_ai_project)
+
+result = groundedness_pro(
+    query="What is Azure?",
+    context="Azure is Microsoft's cloud platform...",
+    response="Azure provides cloud services."
+)
+```
 
 ### RelevanceEvaluator
 
@@ -259,15 +306,9 @@ result = meteor(
 Safety evaluators require an Azure AI project scope.
 
 ```python
-from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
-
-# Get project scope for safety evaluators
-project = AIProjectClient.from_connection_string(
-    conn_str="<connection-string>",
-    credential=DefaultAzureCredential()
-)
-project_scope = project.scope
+# Safety evaluators support evaluate_query parameter (default: False)
+# When True, both query and response are evaluated
+# When False (default), only response is evaluated
 ```
 
 ### ViolenceEvaluator
@@ -277,7 +318,7 @@ Detects violent content.
 ```python
 from azure.ai.evaluation import ViolenceEvaluator
 
-violence = ViolenceEvaluator(azure_ai_project=project_scope)
+violence = ViolenceEvaluator(azure_ai_project=azure_ai_project)
 
 result = violence(
     query="Tell me a story",
@@ -288,8 +329,16 @@ result = violence(
 # {
 #     "violence": "Very low",        # Severity level
 #     "violence_score": 0,           # Score 0-7
-#     "violence_reason": "..."       # Explanation
+#     "violence_reason": "...",      # Explanation
+#     "violence_result": "pass",     # pass/fail
+#     "violence_threshold": 3
 # }
+
+# To also evaluate the query (not just response)
+violence_with_query = ViolenceEvaluator(
+    azure_ai_project=azure_ai_project,
+    evaluate_query=True
+)
 ```
 
 ### Sexual, SelfHarm, HateUnfairness Evaluators
@@ -303,9 +352,9 @@ from azure.ai.evaluation import (
     HateUnfairnessEvaluator
 )
 
-sexual = SexualEvaluator(azure_ai_project=project_scope)
-self_harm = SelfHarmEvaluator(azure_ai_project=project_scope)
-hate = HateUnfairnessEvaluator(azure_ai_project=project_scope)
+sexual = SexualEvaluator(azure_ai_project=azure_ai_project)
+self_harm = SelfHarmEvaluator(azure_ai_project=azure_ai_project)
+hate = HateUnfairnessEvaluator(azure_ai_project=azure_ai_project)
 ```
 
 ### IndirectAttackEvaluator
@@ -315,7 +364,7 @@ Detects indirect prompt injection attacks.
 ```python
 from azure.ai.evaluation import IndirectAttackEvaluator
 
-indirect = IndirectAttackEvaluator(azure_ai_project=project_scope)
+indirect = IndirectAttackEvaluator(azure_ai_project=azure_ai_project)
 
 result = indirect(
     query="Summarize this document",
@@ -331,12 +380,54 @@ Detects use of copyrighted or protected material.
 ```python
 from azure.ai.evaluation import ProtectedMaterialEvaluator
 
-protected = ProtectedMaterialEvaluator(azure_ai_project=project_scope)
+protected = ProtectedMaterialEvaluator(azure_ai_project=azure_ai_project)
 
 result = protected(
     query="Write me a poem",
     response="Roses are red, violets are blue..."
 )
+```
+
+### CodeVulnerabilityEvaluator
+
+Detects security vulnerabilities in code.
+
+```python
+from azure.ai.evaluation import CodeVulnerabilityEvaluator
+
+code_vuln = CodeVulnerabilityEvaluator(azure_ai_project=azure_ai_project)
+
+result = code_vuln(
+    query="Write a SQL query",
+    response="SELECT * FROM users WHERE id = '" + user_input + "'"
+)
+
+# Detects vulnerabilities:
+# - sql-injection, code-injection, path-injection
+# - hardcoded-credentials, weak-cryptographic-algorithm
+# - reflected-xss, clear-text-logging-sensitive-data
+# - and more...
+```
+
+### UngroundedAttributesEvaluator
+
+Detects ungrounded inferences about human attributes.
+
+```python
+from azure.ai.evaluation import UngroundedAttributesEvaluator
+
+ungrounded = UngroundedAttributesEvaluator(azure_ai_project=azure_ai_project)
+
+result = ungrounded(
+    query="Tell me about this person",
+    context="John works at a tech company.",
+    response="John seems depressed and unhappy with his job."
+)
+
+# Detects:
+# - emotional_state: ungrounded emotional inferences
+# - protected_class: ungrounded protected class inferences
+# - groundedness: whether claims are grounded in context
 ```
 
 ## Composite Evaluators
@@ -368,7 +459,7 @@ Combines all safety metrics in one evaluator.
 ```python
 from azure.ai.evaluation import ContentSafetyEvaluator
 
-safety = ContentSafetyEvaluator(azure_ai_project=project_scope)
+safety = ContentSafetyEvaluator(azure_ai_project=azure_ai_project)
 
 result = safety(
     query="Tell me about history",
@@ -379,11 +470,167 @@ result = safety(
 # - violence, sexual, self_harm, hate_unfairness
 ```
 
+## Agent Evaluators
+
+Evaluators for AI agents with tool calling capabilities.
+
+### IntentResolutionEvaluator
+
+Evaluates whether the agent correctly understood and resolved user intent.
+
+```python
+from azure.ai.evaluation import IntentResolutionEvaluator
+
+intent = IntentResolutionEvaluator(model_config)
+
+result = intent(
+    query="Book a flight to Paris for next Monday",
+    response="I've found several flights to Paris for Monday..."
+)
+
+# Returns:
+# {
+#     "intent_resolution": 4,  # Score 1-5
+#     "intent_resolution_reason": "...",
+#     "intent_resolution_result": "pass"
+# }
+```
+
+### ResponseCompletenessEvaluator
+
+Evaluates whether the agent's response fully addresses the query.
+
+```python
+from azure.ai.evaluation import ResponseCompletenessEvaluator
+
+completeness = ResponseCompletenessEvaluator(model_config)
+
+result = completeness(
+    query="What's the weather and what should I wear?",
+    response="The weather is sunny and 75°F. I recommend light clothing."
+)
+```
+
+### TaskAdherenceEvaluator
+
+Evaluates whether the agent adhered to the assigned task.
+
+```python
+from azure.ai.evaluation import TaskAdherenceEvaluator
+
+task_adherence = TaskAdherenceEvaluator(model_config)
+
+result = task_adherence(
+    query="Calculate the total cost including tax",
+    response="The total with 8% tax is $108."
+)
+```
+
+### ToolCallAccuracyEvaluator
+
+Evaluates the accuracy of tool calls made by an agent.
+
+```python
+from azure.ai.evaluation import ToolCallAccuracyEvaluator
+
+tool_accuracy = ToolCallAccuracyEvaluator(model_config)
+
+# Evaluate agent response with tool calls
+result = tool_accuracy(
+    query="What's the weather in Seattle?",
+    response="The weather in Seattle is 55°F and cloudy.",
+    tool_calls=[
+        {
+            "name": "get_weather",
+            "arguments": {"location": "Seattle"}
+        }
+    ],
+    tool_definitions=[
+        {
+            "name": "get_weather",
+            "description": "Get weather for a location",
+            "parameters": {"location": {"type": "string"}}
+        }
+    ]
+)
+```
+
+## Azure OpenAI Graders
+
+Grader classes for structured evaluation using Azure OpenAI's grading API.
+
+### AzureOpenAILabelGrader
+
+Classification-based grading with predefined labels.
+
+```python
+from azure.ai.evaluation import AzureOpenAILabelGrader
+
+label_grader = AzureOpenAILabelGrader(
+    model_config=model_config,
+    labels=["positive", "negative", "neutral"],
+    passing_labels=["positive"]
+)
+
+result = label_grader(
+    response="This product is amazing!"
+)
+```
+
+### AzureOpenAIScoreModelGrader
+
+Numeric scoring with customizable thresholds.
+
+```python
+from azure.ai.evaluation import AzureOpenAIScoreModelGrader
+
+score_grader = AzureOpenAIScoreModelGrader(
+    model_config=model_config,
+    pass_threshold=0.7
+)
+
+result = score_grader(
+    query="Explain photosynthesis",
+    response="Plants convert sunlight into energy..."
+)
+```
+
+### AzureOpenAIStringCheckGrader
+
+String matching and validation.
+
+```python
+from azure.ai.evaluation import AzureOpenAIStringCheckGrader
+
+string_grader = AzureOpenAIStringCheckGrader(
+    model_config=model_config,
+    expected_strings=["Azure", "cloud"]
+)
+```
+
+### AzureOpenAITextSimilarityGrader
+
+Semantic similarity evaluation.
+
+```python
+from azure.ai.evaluation import AzureOpenAITextSimilarityGrader
+
+similarity_grader = AzureOpenAITextSimilarityGrader(
+    model_config=model_config
+)
+
+result = similarity_grader(
+    response="Paris is France's capital",
+    ground_truth="The capital of France is Paris"
+)
+```
+
 ## Evaluator Configuration Table
 
 | Evaluator | Type | Required Inputs | Score Range |
 |-----------|------|-----------------|-------------|
 | `GroundednessEvaluator` | AI | query, context, response | 1-5 |
+| `GroundednessProEvaluator` | Service | query, context, response | 1-5 |
 | `RelevanceEvaluator` | AI | query, context, response | 1-5 |
 | `CoherenceEvaluator` | AI | query, response | 1-5 |
 | `FluencyEvaluator` | AI | query, response | 1-5 |
@@ -392,10 +639,16 @@ result = safety(
 | `F1ScoreEvaluator` | NLP | response, ground_truth | 0-1 |
 | `RougeScoreEvaluator` | NLP | response, ground_truth | 0-1 |
 | `BleuScoreEvaluator` | NLP | response, ground_truth | 0-1 |
+| `IntentResolutionEvaluator` | Agent | query, response | 1-5 |
+| `ResponseCompletenessEvaluator` | Agent | query, response | 1-5 |
+| `TaskAdherenceEvaluator` | Agent | query, response | 1-5 |
+| `ToolCallAccuracyEvaluator` | Agent | query, response, tool_calls | 1-5 |
 | `ViolenceEvaluator` | Safety | query, response | 0-7 |
 | `SexualEvaluator` | Safety | query, response | 0-7 |
 | `SelfHarmEvaluator` | Safety | query, response | 0-7 |
 | `HateUnfairnessEvaluator` | Safety | query, response | 0-7 |
+| `CodeVulnerabilityEvaluator` | Safety | query, response | binary |
+| `UngroundedAttributesEvaluator` | Safety | query, context, response | binary |
 
 ## Async Evaluation
 
@@ -423,5 +676,9 @@ result = asyncio.run(evaluate_async())
 1. **Choose appropriate evaluators** - Use NLP evaluators when you have ground truth, AI evaluators for subjective quality
 2. **Batch evaluation** - Use `evaluate()` function for datasets rather than looping
 3. **Safety first** - Always include safety evaluators for user-facing applications
-4. **Log to Foundry** - Track evaluations over time with `azure_ai_project` parameter
+4. **Log to Foundry** - Track evaluations over time with `azure_ai_project` parameter and `tags`
 5. **Threshold configuration** - Set appropriate pass/fail thresholds for your use case
+6. **Use `is_reasoning_model=True`** - When evaluating with o1/o3 reasoning models
+7. **Agent evaluators** - Use IntentResolution, TaskAdherence, and ToolCallAccuracy for AI agents
+8. **Graders for structured eval** - Use AzureOpenAI graders for classification and scoring tasks
+9. **`evaluate_query` parameter** - Control whether queries are included in safety evaluation

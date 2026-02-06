@@ -120,7 +120,7 @@ async def async_validation_evaluator(response: str, context: str) -> dict:
 
 ## Prompt-Based Evaluators
 
-### Using PromptChatTarget
+### Using Azure OpenAI Client
 
 Create evaluators that use LLM judgment:
 
