@@ -94,16 +94,14 @@ import mcpServers from '../data/mcp-servers.json';
           <span class="section-dot"></span>
           MCP Servers
         </h3>
-        <div class="chips-container">
-          {mcpServers.map((server) => (
-            <MCPChip
-              emoji={server.emoji}
-              name={server.name}
-              description={server.description}
-              category={server.category}
-              url={server.url}
-            />
-          ))}
+        <div class="docs-grid">
+          <a href="https://github.com/microsoft/skills/blob/main/.vscode/mcp.json" target="_blank" rel="noopener noreferrer" class="doc-card">
+            <span class="doc-icon">⚙️</span>
+            <div class="doc-content">
+              <h3 class="doc-title">mcp.json</h3>
+              <p class="doc-desc">Pre-configured MCP servers for docs, GitHub, browser automation, and utilities</p>
+            </div>
+          </a>
         </div>
       </div>
     </section>

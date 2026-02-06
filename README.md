@@ -106,7 +106,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 > 41 skills • suffix: `-py`
 
 <details>
-<summary><strong>Foundry & AI</strong> (8 skills)</summary>
+<summary><strong>Foundry & AI</strong> (7 skills)</summary>
 
 | Skill | Description |
 |-------|-------------|
@@ -117,6 +117,14 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 | [hosted-agents-v2-py](.github/skills/hosted-agents-v2-py/) | Hosted Agents SDK — container-based agents with ImageBasedHostedAgentDefinition, custom images, tools. |
 | [azure-ai-projects-py](.github/skills/azure-ai-projects-py/) | High-level Foundry SDK — project client, versioned agents, evals, connections, OpenAI-compatible clients. |
 | [azure-search-documents-py](.github/skills/azure-search-documents-py/) | AI Search SDK — vector search, hybrid search, semantic ranking, indexing, skillsets. |
+
+</details>
+
+<details>
+<summary><strong>M365</strong> (1 skill)</summary>
+
+| Skill | Description |
+|-------|-------------|
 | [m365-agents-py](.github/skills/m365-agents-py/) | Microsoft 365 Agents SDK — aiohttp hosting, AgentApplication routing, streaming, Copilot Studio client. |
 
 </details>
@@ -217,7 +225,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 > 29 skills • suffix: `-dotnet`
 
 <details>
-<summary><strong>Foundry & AI</strong> (8 skills)</summary>
+<summary><strong>Foundry & AI</strong> (7 skills)</summary>
 
 | Skill | Description |
 |-------|-------------|
@@ -228,6 +236,14 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 | [azure-ai-voicelive-dotnet](.github/skills/azure-ai-voicelive-dotnet/) | Voice Live — real-time voice AI with bidirectional WebSocket. |
 | [azure-mgmt-weightsandbiases-dotnet](.github/skills/azure-mgmt-weightsandbiases-dotnet/) | Weights & Biases — ML experiment tracking via Azure Marketplace. |
 | [azure-search-documents-dotnet](.github/skills/azure-search-documents-dotnet/) | AI Search — full-text, vector, semantic, hybrid search. |
+
+</details>
+
+<details>
+<summary><strong>M365</strong> (1 skill)</summary>
+
+| Skill | Description |
+|-------|-------------|
 | [m365-agents-dotnet](.github/skills/m365-agents-dotnet/) | Microsoft 365 Agents SDK — ASP.NET Core hosting, AgentApplication routing, Copilot Studio client. |
 
 </details>
@@ -300,18 +316,26 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 > 24 skills • suffix: `-ts`
 
 <details>
-<summary><strong>Foundry & AI</strong> (8 skills)</summary>
+<summary><strong>Foundry & AI</strong> (7 skills)</summary>
 
 | Skill | Description |
 |-------|-------------|
 | [azure-ai-contentsafety-ts](.github/skills/azure-ai-contentsafety-ts/) | Content Safety — moderate text/images, detect harmful content. |
 | [azure-ai-document-intelligence-ts](.github/skills/azure-ai-document-intelligence-ts/) | Document Intelligence — extract from invoices, receipts, IDs, forms. |
 | [azure-ai-projects-ts](.github/skills/azure-ai-projects-ts/) | AI Projects SDK — Foundry client, agents, connections, evals. |
-| [m365-agents-ts](.github/skills/m365-agents-ts/) | Microsoft 365 Agents SDK — AgentApplication routing, Express hosting, streaming, Copilot Studio client. |
 | [azure-ai-translation-ts](.github/skills/azure-ai-translation-ts/) | Translation — text translation, transliteration, document batch. |
 | [azure-ai-voicelive-ts](.github/skills/azure-ai-voicelive-ts/) | Voice Live — real-time voice AI with WebSocket, Node.js or browser. |
 | [azure-search-documents-ts](.github/skills/azure-search-documents-ts/) | AI Search — vector/hybrid search, semantic ranking, knowledge bases. |
 | [frontend-ui-dark-ts](.github/skills/frontend-ui-dark-ts/) | Frontend UI Dark — Vite + React + Tailwind + Framer Motion dark-themed UI design system. |
+
+</details>
+
+<details>
+<summary><strong>M365</strong> (1 skill)</summary>
+
+| Skill | Description |
+|-------|-------------|
+| [m365-agents-ts](.github/skills/m365-agents-ts/) | Microsoft 365 Agents SDK — AgentApplication routing, Express hosting, streaming, Copilot Studio client. |
 
 </details>
 
