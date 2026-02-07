@@ -3,7 +3,7 @@
 [![Evals & Tests](https://img.shields.io/github/actions/workflow/status/microsoft/skills/test-harness.yml?branch=main&label=Evals%20%26%20Tests)](https://github.com/microsoft/skills/actions/workflows/test-harness.yml)
 [![Copilot SDK Tests](https://img.shields.io/github/actions/workflow/status/microsoft/skills/skill-evaluation.yml?branch=main&label=Copilot%20SDK%20Tests)](https://github.com/microsoft/skills/actions/workflows/skill-evaluation.yml)
 [![Install via skills.sh](https://img.shields.io/badge/skills.sh-install-blue)](https://skills.sh/microsoft/skills)
-[![Browse on Context7](https://img.shields.io/badge/Context7-browse%20skills-purple)](https://context7.com/microsoft/skills?tab=skills)
+[![Documentation](https://img.shields.io/badge/docs-documentation-blue)](https://microsoft.github.io/skills/#documentation)
 
 > [!NOTE]
 > **Work in Progress** — This repository is under active development. More skills are being added, existing skills are being updated to use the latest SDK patterns, and tests are being expanded to ensure quality. Contributions welcome!
@@ -40,14 +40,6 @@ ln -s ../.github/skills .opencode/skills
 ln -s ../.github/skills .claude/skills
 ```
 
-**Context7**
-
-Browse and install skills via [context7.com/microsoft/skills](https://context7.com/microsoft/skills?tab=skills):
-
-```bash
-npx ctx7 skills install /microsoft/skills azure-ai-projects-py
-```
-
 </details>
 
 ---
@@ -71,7 +63,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) are po
 | **[Custom Agents](#agents)** | Role-specific agents (backend, frontend, infrastructure, planner) |
 | **[AGENTS.md](AGENTS.md)** | Template for configuring agent behavior in your projects |
 | **[MCP Configs](#mcp-servers)** | Pre-configured servers for docs, GitHub, browser automation |
-| **[Live Docs](https://context7.com/llmstxt/microsoft_github_io_skills_llms-full_txt)** | Context7-indexed Foundry documentation, updated daily |
+| **[Documentation](https://microsoft.github.io/skills/#documentation)** | Repo docs and usage guides |
 
 ---
 
@@ -564,7 +556,6 @@ Role-specific agent personas in [`.github/agents/`](.github/agents/):
 | `infrastructure.agent.md` | Bicep, Azure CLI, Container Apps, networking |
 | `planner.agent.md` | Task decomposition, architecture decisions |
 | `presenter.agent.md` | Documentation, demos, technical writing |
-| `scaffolder.agent.md` | Full-stack Azure AI Foundry app scaffolding |
 
 Use [`AGENTS.md`](AGENTS.md) as a template for configuring agent behavior in your own projects.
 
@@ -574,53 +565,14 @@ Reusable prompt templates in [`.github/prompts/`](.github/prompts/):
 
 | Prompt | Purpose |
 |--------|---------|
-| [`scaffold-foundry-app.prompt.md`](.github/prompts/scaffold-foundry-app.prompt.md) | **Full-stack Azure AI Foundry app scaffolder** — Vite + React + Fluent UI dark theme frontend, FastAPI + Pydantic backend, azd + Bicep infrastructure for Container Apps with remote builds |
 | [`code-review.prompt.md`](.github/prompts/code-review.prompt.md) | Structured code review with security, performance, and maintainability checks |
 | [`create-store.prompt.md`](.github/prompts/create-store.prompt.md) | Zustand store creation with TypeScript and subscribeWithSelector |
 | [`create-node.prompt.md`](.github/prompts/create-node.prompt.md) | React Flow custom node creation with handles and Zustand integration |
 | [`add-endpoint.prompt.md`](.github/prompts/add-endpoint.prompt.md) | FastAPI endpoint creation with Pydantic models and proper typing |
 
-#### Project Scaffolder
+### Documentation
 
-The **scaffold-foundry-app** prompt + **scaffolder** agent provide a complete project scaffolding system for Azure AI Foundry applications:
-
-**Frontend Stack:**
-- Vite + React 18 + TypeScript (strict mode)
-- Fluent UI v9 with dark theme
-- Framer Motion for animations
-- Tailwind CSS (JIT) for utility styles
-- pnpm package manager
-
-**Backend Stack:**
-- FastAPI with async patterns
-- Pydantic v2 for validation
-- pytest + pytest-asyncio for testing
-- Ruff for linting/formatting
-- uv for dependency management
-
-**Infrastructure:**
-- Azure Developer CLI (azd) with `remoteBuild: true`
-- Bicep templates for Azure Container Apps
-- Managed Identity for secure authentication
-- Azure Container Registry for images
-
-```bash
-# Use with GitHub Copilot Chat
-@workspace /scaffold-foundry-app Create a chat application with Azure OpenAI
-
-# Or invoke the scaffolder agent directly
-@scaffolder Build a document analysis app with Foundry agents
-```
-
-### Live Documentation
-
-[Context7](https://context7.com/llmstxt/microsoft_github_io_skills_llms-full_txt) indexes this repo's Foundry documentation with semantic search. Updated daily via [GitHub workflow](.github/workflows/update-llms-txt.md):
-
-1. Scrapes the latest [Azure AI Foundry TOC](https://learn.microsoft.com/en-us/azure/ai-foundry/) from Microsoft Learn
-2. Generates `llms.txt` and `llms-full.txt`, hosted at [microsoft.github.io/skills](https://microsoft.github.io/skills/)
-3. Creates a PR if documentation has changed
-
-These files follow the [llms.txt specification](https://llmstxt.org/) for LLM-friendly documentation.
+See the docs at https://microsoft.github.io/skills/#documentation.
 
 ---
 
@@ -652,7 +604,7 @@ pnpm test
 
 | Language | Skills | Scenarios | Top Skills by Scenarios |
 |----------|--------|-----------|-------------------------|
-| Core | 5 | 51 | `scaffold-foundry-app` (11), `podcast-generation` (8), `skill-creator` (8) |
+| Core | 5 | 51 | `podcast-generation` (8), `skill-creator` (8) |
 | Python | 41 | 331 | `azure-ai-projects-py` (12), `pydantic-models-py` (12), `azure-ai-translation-text-py` (11) |
 | .NET | 29 | 290 | `azure-resource-manager-sql-dotnet` (14), `azure-resource-manager-redis-dotnet` (14), `azure-servicebus-dotnet` (13) |
 | TypeScript | 24 | 257 | `azure-storage-blob-ts` (17), `azure-servicebus-ts` (14), `azure-microsoft-playwright-testing-ts` (13) |
