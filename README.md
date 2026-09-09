@@ -60,7 +60,7 @@ Coding agents like [Copilot CLI](https://github.com/features/copilot/cli) and [G
 | Resource | Description |
 |----------|-------------|
 | **[174 Skills](#skill-catalog)** | Domain-specific knowledge for Azure SDK and Foundry development |
-| **[Plugins](#plugins)** | Installable plugin packages (deep-wiki, azure-skills and more) |
+| **[Plugins](#plugins)** | Installable plugin packages (deep-wiki, azure and more) |
 | **[Custom Agents](#agents)** | Role-specific agents (backend, frontend, infrastructure, planner) |
 | **[AGENTS.md](AGENTS.md)** | Template for configuring agent behavior in your projects |
 | **[MCP Configs](#mcp-servers)** | Pre-configured servers for docs, GitHub, browser automation |
@@ -573,13 +573,13 @@ Plugins are installable packages containing curated sets of agents, commands, an
 # Inside Copilot CLI, run these slash commands:
 /plugin marketplace add microsoft/skills
 /plugin install deep-wiki@skills
-/plugin install azure-skills@skills
+/plugin install azure@skills
 ```
 
 | Plugin | Description | Commands |
 |--------|-------------|----------|
 | [deep-wiki](https://github.com/microsoft/skills/tree/main/.github/plugins/deep-wiki) | AI-powered wiki generator with Mermaid diagrams, source citations, onboarding guides, AGENTS.md, and llms.txt | `/deep-wiki:generate`, `/deep-wiki:crisp`, `/deep-wiki:catalogue`, `/deep-wiki:page`, `/deep-wiki:research`, `/deep-wiki:ask`, `/deep-wiki:onboard`, `/deep-wiki:agents`, `/deep-wiki:llms`, `/deep-wiki:changelog`, `/deep-wiki:ado`, `/deep-wiki:build`, `/deep-wiki:deploy` |
-| [azure-skills](https://github.com/microsoft/skills/tree/main/.github/plugins/azure-skills) | Microsoft Azure MCP integration for cloud resource management, deployments, and Azure services. Includes 35 skills covering AI, storage, diagnostics, cost optimization, compliance, RBAC, the 3-step deployment workflow (`azure-prepare` → `azure-validate` → `azure-deploy`), and the language-agnostic `microsoft-foundry` orchestrator + 10 Foundry sub-skills (hosted agents, toolboxes, IQ knowledge bases, memory, observability, governance, more). | Skills-based (no slash commands) — auto-triggered by intent matching via `azure` and `foundry-mcp` MCP servers |
+| [azure](https://github.com/microsoft/skills/tree/main/.github/plugins/azure-skills) | Microsoft Azure MCP and Skills integration for cloud resource management, deployments, and Azure services. Manage your Azure infrastructure, monitor applications, and deploy resources directly from your development environment. | Skills-based (no slash commands) — auto-triggered by intent matching via `azure` and `foundry-mcp` MCP servers |
 
 ---
 
@@ -703,7 +703,7 @@ The test harness implements iterative quality improvement patterns inspired by [
 
 ### Adding New Skills
 
-> **Note:** The `azure-skills` plugin (`.github/plugins/azure-skills/`) is copied from [microsoft/github-copilot-for-azure](https://github.com/microsoft/github-copilot-for-azure). Changes to that plugin should be made in the upstream repository rather than directly here.
+> **Note:** The `azure` plugin (`.github/plugins/azure-skills/`) is copied from [microsoft/github-copilot-for-azure](https://github.com/microsoft/github-copilot-for-azure). Changes to that plugin should be made in the upstream repository rather than directly here.
 
 New skills must follow the full workflow to ensure quality and discoverability:
 
