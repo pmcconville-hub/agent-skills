@@ -9,6 +9,9 @@
     "version": "1.0.0",
     "pluginRoot": "./.github/plugins"
   },
+  "renames": {
+    "azure-skills": "azure"
+  },
   "plugins": [
     {
       "name": "deep-wiki",
@@ -22,15 +25,29 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/deep-wiki",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["wiki", "documentation", "mermaid", "architecture", "code-analysis"],
+      "keywords": [
+        "wiki",
+        "documentation",
+        "mermaid",
+        "architecture",
+        "code-analysis"
+      ],
       "category": "documentation",
-      "commands": ["./commands/"],
-      "skills": ["./skills/"],
-      "agents": ["./agents/wiki-architect.md", "./agents/wiki-researcher.md", "./agents/wiki-writer.md"],
+      "commands": [
+        "./commands/"
+      ],
+      "skills": [
+        "./skills/"
+      ],
+      "agents": [
+        "./agents/wiki-architect.md",
+        "./agents/wiki-researcher.md",
+        "./agents/wiki-writer.md"
+      ],
       "strict": true
     },
     {
-      "name": "azure-skills",
+      "name": "azure",
       "source": "./.github/plugins/azure-skills",
       "description": "Microsoft Azure MCP integration for cloud resource management, deployments, and Azure services. Manage your Azure infrastructure, monitor applications, and deploy resources directly from Claude Code.",
       "version": "1.0.0",
@@ -41,9 +58,18 @@
       "homepage": "https://github.com/microsoft/github-copilot-for-azure",
       "repository": "https://github.com/microsoft/github-copilot-for-azure",
       "license": "MIT",
-      "keywords": ["azure", "cloud", "infrastructure", "deployment", "microsoft", "devops"],
+      "keywords": [
+        "azure",
+        "cloud",
+        "infrastructure",
+        "deployment",
+        "microsoft",
+        "devops"
+      ],
       "category": "orchestration",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     },
     {
       "name": "azure-sdk-python",
@@ -57,9 +83,19 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-python",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "python", "sdk", "ai", "storage", "identity", "monitoring"],
+      "keywords": [
+        "azure",
+        "python",
+        "sdk",
+        "ai",
+        "storage",
+        "identity",
+        "monitoring"
+      ],
       "category": "sdk",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     },
     {
       "name": "azure-sdk-dotnet",
@@ -73,9 +109,18 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-dotnet",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "dotnet", "csharp", "sdk", "resource-manager", "identity"],
+      "keywords": [
+        "azure",
+        "dotnet",
+        "csharp",
+        "sdk",
+        "resource-manager",
+        "identity"
+      ],
       "category": "sdk",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     },
     {
       "name": "azure-sdk-typescript",
@@ -89,9 +134,18 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-typescript",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "typescript", "nodejs", "sdk", "ai", "storage"],
+      "keywords": [
+        "azure",
+        "typescript",
+        "nodejs",
+        "sdk",
+        "ai",
+        "storage"
+      ],
       "category": "sdk",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     },
     {
       "name": "azure-sdk-java",
@@ -105,9 +159,18 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-java",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "java", "sdk", "communication", "eventhub", "identity"],
+      "keywords": [
+        "azure",
+        "java",
+        "sdk",
+        "communication",
+        "eventhub",
+        "identity"
+      ],
       "category": "sdk",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     },
     {
       "name": "azure-sdk-rust",
@@ -121,9 +184,18 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-rust",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "rust", "sdk", "keyvault", "storage", "cosmos"],
+      "keywords": [
+        "azure",
+        "rust",
+        "sdk",
+        "keyvault",
+        "storage",
+        "cosmos"
+      ],
       "category": "sdk",
-      "skills": ["./skills/"]
+      "skills": [
+        "./skills/"
+      ]
     }
   ]
 }

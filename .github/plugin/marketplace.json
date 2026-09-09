@@ -8,6 +8,9 @@
     "description": "Skills, agents, and plugins for AI coding agents working with Azure SDKs and Microsoft AI Foundry",
     "version": "1.0.0"
   },
+  "renames": {
+    "azure-skills": "azure"
+  },
   "plugins": [
     {
       "name": "deep-wiki",
@@ -21,16 +24,27 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/deep-wiki",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["wiki", "documentation", "mermaid", "architecture", "code-analysis"],
+      "keywords": [
+        "wiki",
+        "documentation",
+        "mermaid",
+        "architecture",
+        "code-analysis"
+      ],
       "category": "documentation",
-      "tags": ["deep-wiki", "diagrams", "citations", "codebase-understanding"],
+      "tags": [
+        "deep-wiki",
+        "diagrams",
+        "citations",
+        "codebase-understanding"
+      ],
       "commands": "commands/",
       "skills": "skills/",
       "agents": "agents/",
       "strict": true
     },
     {
-      "name": "azure-skills",
+      "name": "azure",
       "description": "Microsoft Azure MCP integration for cloud resource management, deployments, and Azure services. Manage your Azure infrastructure, monitor applications, and deploy resources directly from Claude Code.",
       "source": "./.github/plugins/azure-skills",
       "author": {
@@ -53,7 +67,15 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-python",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "python", "sdk", "ai", "storage", "identity", "monitoring"],
+      "keywords": [
+        "azure",
+        "python",
+        "sdk",
+        "ai",
+        "storage",
+        "identity",
+        "monitoring"
+      ],
       "category": "sdk",
       "skills": "skills/"
     },
@@ -69,7 +91,14 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-dotnet",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "dotnet", "csharp", "sdk", "resource-manager", "identity"],
+      "keywords": [
+        "azure",
+        "dotnet",
+        "csharp",
+        "sdk",
+        "resource-manager",
+        "identity"
+      ],
       "category": "sdk",
       "skills": "skills/"
     },
@@ -85,7 +114,14 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-typescript",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "typescript", "nodejs", "sdk", "ai", "storage"],
+      "keywords": [
+        "azure",
+        "typescript",
+        "nodejs",
+        "sdk",
+        "ai",
+        "storage"
+      ],
       "category": "sdk",
       "skills": "skills/"
     },
@@ -101,7 +137,14 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-java",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "java", "sdk", "communication", "eventhub", "identity"],
+      "keywords": [
+        "azure",
+        "java",
+        "sdk",
+        "communication",
+        "eventhub",
+        "identity"
+      ],
       "category": "sdk",
       "skills": "skills/"
     },
@@ -117,7 +160,14 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/azure-sdk-rust",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["azure", "rust", "sdk", "keyvault", "storage", "cosmos"],
+      "keywords": [
+        "azure",
+        "rust",
+        "sdk",
+        "keyvault",
+        "storage",
+        "cosmos"
+      ],
       "category": "sdk",
       "skills": "skills/"
     },
@@ -133,7 +183,17 @@
       "homepage": "https://github.com/microsoft/skills/tree/main/.github/plugins/microsoft-foundry",
       "repository": "https://github.com/microsoft/skills",
       "license": "MIT",
-      "keywords": ["foundry", "azure-ai", "agents", "voice", "search", "rag", "content-safety", "model-deployment", "mcp"],
+      "keywords": [
+        "foundry",
+        "azure-ai",
+        "agents",
+        "voice",
+        "search",
+        "rag",
+        "content-safety",
+        "model-deployment",
+        "mcp"
+      ],
       "category": "ai",
       "skills": "skills/"
     }
