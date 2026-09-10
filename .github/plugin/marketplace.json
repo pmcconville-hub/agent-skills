@@ -45,10 +45,10 @@
     },
     {
       "name": "azure",
-      "description": "Microsoft Azure MCP integration for cloud resource management, deployments, and Azure services. Manage your Azure infrastructure, monitor applications, and deploy resources directly from Claude Code.",
+      "description": "Microsoft Azure MCP and Skills integration for cloud resource management, deployments, and Azure services. Manage your Azure infrastructure, monitor applications, and deploy resources directly from your development environment.",
       "source": "./.github/plugins/azure-skills",
       "author": {
-        "name": "microsoft",
+        "name": "Microsoft",
         "url": "https://www.microsoft.com"
       },
       "homepage": "https://github.com/microsoft/github-copilot-for-azure",
@@ -196,6 +196,17 @@
       ],
       "category": "ai",
       "skills": "skills/"
+    },
+    {
+      "name": "azure-kusto-graph-skills",
+      "source": "./.github/plugins/azure-kusto-graph-skills",
+      "description": "Kusto graph analysis, IRQL security hunting pipelines, and graph visualization skills for Azure Data Explorer.",
+      "author": {
+        "name": "Microsoft",
+        "url": "https://www.microsoft.com"
+      },
+      "homepage": "https://github.com/microsoft/github-copilot-for-azure",
+      "repository": "https://github.com/microsoft/github-copilot-for-azure"
     }
   ]
 }
